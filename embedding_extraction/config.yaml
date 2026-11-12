@@ -1,0 +1,11 @@
+model_path: /mnt/data/chachaxu/model/dinov3 # Local Hugging Face model only.
+cache_root: /mnt/data/chachaxu/embedding_cluster/robodojo # Existing first/last PNG cache.
+output_root: /mnt/data/chachaxu/embedding_cluster/robodojo_embeddings # Config-signature subdirectories.
+layer_from_end: 1 # 1=last block, 2=penultimate; valid range 1..24 for this model.
+image_size: 224 # Square letterbox; must be divisible by model patch size.
+batch_size: 16 # Images per GPU inference batch, not episode concurrency.
+device: cuda # cuda, cuda:0 or cpu.
+dtype: bf16 # bf16, fp16 or fp32; unsupported device falls back to fp32.
+save_patches: false # Also save per-patch normalized features and valid-area weights.
+limit_episodes: 0 # 0=all; positive values are useful for smoke tests.
+force: false # Recompute outputs even if their signatures and contents validate.

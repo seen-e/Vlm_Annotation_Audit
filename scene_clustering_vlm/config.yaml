@@ -1,0 +1,25 @@
+# Paths are resolved relative to this config file when not absolute.
+cache_root: /mnt/data/chachaxu/embedding_cluster/robodojo # Existing PNG cache; no video decoding.
+dataset_root: /mnt/data/chengyezhao/RoboDojo_ee_lerobot_v30_video # Exact task-text to task_index mapping.
+output_root: /mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/two_round_v1 # Separate from DINO runs.
+frame_mode: first_last # first, last, first_last; same mode for both rounds.
+episodes_per_batch: 50 # First-round request size, not final cluster size.
+representatives_per_cluster: 3 # Exactly min(this value, group size) representatives.
+task_ids: [] # Empty means all tasks; CLI --task-id can restrict the experiment.
+task_workers: 4 # Concurrent tasks; requests within each task run sequentially.
+shuffle_seed: 42 # Reproducible within-task shuffle; plan is saved.
+max_images_per_request: 200 # Hard cap, including round two; overflow is an explicit error, no extra rounds.
+max_image_edge: 640 # Preserve aspect ratio and full image; no center crop.
+jpeg_quality: 90 # The exact sent JPEGs are saved with SHA256.
+api:
+  credentials_file: null # Optional YAML with base_url/api_key/model, optionally under model:.
+  base_url_env: VLM_CLUSTER_BASE_URL # Used if credentials_file is null.
+  api_key_env: VLM_CLUSTER_API_KEY # Never copied into output snapshots.
+  model_env: VLM_CLUSTER_MODEL # Required, do not silently select a different model.
+  thinking: true # Qwen chat_template_kwargs.enable_thinking; configurable.
+  temperature: 0
+  max_tokens: 16384 # JSON output token budget; truncated responses fail validation.
+  timeout_sec: 600
+  attempts: 3 # Request/schema retry count, not additional clustering rounds.
+  retry_delay_sec: 5
+  stream: true

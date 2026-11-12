@@ -1,0 +1,26 @@
+{
+  "prompt_matches_original_run": true,
+  "api_configuration_matches": true,
+  "paid_api_calls": 0,
+  "manual_tasks": 35,
+  "manual_images": 3500,
+  "review_standard_episodes": 3500,
+  "standards_match_authoritative_copy": true,
+  "gpu": "NVIDIA H20",
+  "gpu_smoke_images": 2,
+  "embedding_dimensions": {
+    "cls": 1024,
+    "spatial_2x2": 4096
+  },
+  "versions": {
+    "torch": "2.10.0",
+    "torchvision": "0.25.0",
+    "transformers": "5.8.1",
+    "numpy": "2.5.1",
+    "Pillow": "11.3.0",
+    "PyYAML": "6.0.3",
+    "scikit-learn": "1.9.0",
+    "pyarrow": "25.0.0",
+    "openai": "2.49.0"
+  }
+}

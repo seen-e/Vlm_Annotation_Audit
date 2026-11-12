@@ -1,0 +1,5 @@
+{
+  "results_root": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511",
+  "images_root": "/mnt/data/chachaxu/embedding_cluster/robodojo_experiments/last_cls_hdbscan_20261111_v1/viewer/images",
+  "output_root": "datasets/robodojo3500"
+}

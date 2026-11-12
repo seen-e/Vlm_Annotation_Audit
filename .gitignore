@@ -1,0 +1,46 @@
+# Credentials and machine-specific overrides
+.credentials/
+.env
+.env.*
+!.env.example
+*.local.yaml
+*.local.yml
+*.pem
+*.key
+
+# Python and editor caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+.idea/
+.vscode/
+node_modules/
+
+# Dataset assets and generated experiments
+datasets/
+outputs/
+experiments/
+exports/
+logs/
+*.log
+*.mp4
+*.avi
+*.mov
+*.png
+*.jpg
+*.jpeg
+*.npz
+*.npy
+*.safetensors
+*.parquet
+*.tar
+*.tar.gz
+*.zip
+*.tar.xz
+*.tmp
+
+# Local browser-test generated packages
+.viewer_test/
+.standards_test/

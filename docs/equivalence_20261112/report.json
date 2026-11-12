@@ -1,0 +1,932 @@
+{
+  "started_at": "2026-11-12T02:59:24.667811+00:00",
+  "paid_api_calls": 0,
+  "basis": "saved inputs, successful raw API responses, and old outputs; no old files modified",
+  "sections": {
+    "subtask_annotation_filter": {
+      "episodes": 3500,
+      "matched": 3499,
+      "normal": 2015,
+      "pre_restart_matched": 2054,
+      "successful_response_with_retry_context": 30,
+      "uncertain": 1135,
+      "anomaly": 349,
+      "original_failed": 1,
+      "resumed_matched": 1445,
+      "failure_details": [
+        {
+          "kind": "original_failed",
+          "episode_id": "robodojo_episode_001102",
+          "errors": [
+            "Unknown subtask ID",
+            "Unknown subtask ID",
+            "Unknown subtask ID",
+            "Unknown subtask ID",
+            "Unknown subtask ID",
+            "Unknown subtask ID"
+          ]
+        }
+      ],
+      "retry_note": "successful raw response replayed directly; original success retry-feedback text not regenerated"
+    },
+    "scene_clustering_vlm": {
+      "tasks_matched": 35,
+      "episodes_matched": 3500,
+      "groups_matched": 199,
+      "requests_matched": 105,
+      "image_occurrences_matched": 8556,
+      "recovery_requests_matched": 2,
+      "task_details": [
+        {
+          "task_id": 0,
+          "episodes": 100,
+          "groups": 8,
+          "requests": [
+            {
+              "request": "task_000/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_000/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_000/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_000/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_000/round2",
+              "images": 70,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_000/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 1,
+          "episodes": 100,
+          "groups": 1,
+          "requests": [
+            {
+              "request": "task_001/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_001/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_001/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_001/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_001/round2",
+              "images": 12,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_001/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 2,
+          "episodes": 100,
+          "groups": 5,
+          "requests": [
+            {
+              "request": "task_002/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_002/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_002/round1/batch_001",
+              "images": 100,
+              "recovery_request": true,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/recovery_20261111_162603/task_002/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_002/round2",
+              "images": 130,
+              "recovery_request": true,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/recovery_20261111_162603/task_002/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 3,
+          "episodes": 100,
+          "groups": 6,
+          "requests": [
+            {
+              "request": "task_003/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_003/round1/batch_000/attempt_002"
+            },
+            {
+              "request": "task_003/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_003/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_003/round2",
+              "images": 72,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_003/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 4,
+          "episodes": 100,
+          "groups": 2,
+          "requests": [
+            {
+              "request": "task_004/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_004/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_004/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_004/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_004/round2",
+              "images": 24,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_004/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 5,
+          "episodes": 100,
+          "groups": 100,
+          "requests": [
+            {
+              "request": "task_005/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_005/round1/batch_000/attempt_002"
+            },
+            {
+              "request": "task_005/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_005/round1/batch_001/attempt_003"
+            },
+            {
+              "request": "task_005/round2",
+              "images": 200,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_005/round2/attempt_002"
+            }
+          ]
+        },
+        {
+          "task_id": 6,
+          "episodes": 100,
+          "groups": 10,
+          "requests": [
+            {
+              "request": "task_006/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_006/round1/batch_000/attempt_002"
+            },
+            {
+              "request": "task_006/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_006/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_006/round2",
+              "images": 112,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_006/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 7,
+          "episodes": 100,
+          "groups": 1,
+          "requests": [
+            {
+              "request": "task_007/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_007/round1/batch_000/attempt_002"
+            },
+            {
+              "request": "task_007/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_007/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_007/round2",
+              "images": 12,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_007/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 8,
+          "episodes": 100,
+          "groups": 2,
+          "requests": [
+            {
+              "request": "task_008/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_008/round1/batch_000/attempt_002"
+            },
+            {
+              "request": "task_008/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_008/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_008/round2",
+              "images": 96,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_008/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 9,
+          "episodes": 100,
+          "groups": 1,
+          "requests": [
+            {
+              "request": "task_009/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_009/round1/batch_000/attempt_002"
+            },
+            {
+              "request": "task_009/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_009/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_009/round2",
+              "images": 12,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_009/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 10,
+          "episodes": 100,
+          "groups": 1,
+          "requests": [
+            {
+              "request": "task_010/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_010/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_010/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_010/round1/batch_001/attempt_002"
+            },
+            {
+              "request": "task_010/round2",
+              "images": 12,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_010/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 11,
+          "episodes": 100,
+          "groups": 14,
+          "requests": [
+            {
+              "request": "task_011/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_011/round1/batch_000/attempt_002"
+            },
+            {
+              "request": "task_011/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_011/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_011/round2",
+              "images": 102,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_011/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 12,
+          "episodes": 100,
+          "groups": 1,
+          "requests": [
+            {
+              "request": "task_012/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_012/round1/batch_000/attempt_002"
+            },
+            {
+              "request": "task_012/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_012/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_012/round2",
+              "images": 24,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_012/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 13,
+          "episodes": 100,
+          "groups": 1,
+          "requests": [
+            {
+              "request": "task_013/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_013/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_013/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_013/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_013/round2",
+              "images": 12,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_013/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 14,
+          "episodes": 100,
+          "groups": 1,
+          "requests": [
+            {
+              "request": "task_014/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_014/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_014/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_014/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_014/round2",
+              "images": 12,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_014/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 15,
+          "episodes": 100,
+          "groups": 2,
+          "requests": [
+            {
+              "request": "task_015/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_015/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_015/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_015/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_015/round2",
+              "images": 24,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_015/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 16,
+          "episodes": 100,
+          "groups": 1,
+          "requests": [
+            {
+              "request": "task_016/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_016/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_016/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_016/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_016/round2",
+              "images": 56,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_016/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 17,
+          "episodes": 100,
+          "groups": 6,
+          "requests": [
+            {
+              "request": "task_017/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_017/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_017/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_017/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_017/round2",
+              "images": 124,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_017/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 18,
+          "episodes": 100,
+          "groups": 7,
+          "requests": [
+            {
+              "request": "task_018/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_018/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_018/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_018/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_018/round2",
+              "images": 34,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_018/round2/attempt_002"
+            }
+          ]
+        },
+        {
+          "task_id": 19,
+          "episodes": 100,
+          "groups": 1,
+          "requests": [
+            {
+              "request": "task_019/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_019/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_019/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_019/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_019/round2",
+              "images": 12,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_019/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 20,
+          "episodes": 100,
+          "groups": 1,
+          "requests": [
+            {
+              "request": "task_020/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_020/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_020/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_020/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_020/round2",
+              "images": 12,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_020/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 21,
+          "episodes": 100,
+          "groups": 1,
+          "requests": [
+            {
+              "request": "task_021/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_021/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_021/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_021/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_021/round2",
+              "images": 12,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_021/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 22,
+          "episodes": 100,
+          "groups": 1,
+          "requests": [
+            {
+              "request": "task_022/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_022/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_022/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_022/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_022/round2",
+              "images": 12,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_022/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 23,
+          "episodes": 100,
+          "groups": 5,
+          "requests": [
+            {
+              "request": "task_023/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_023/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_023/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_023/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_023/round2",
+              "images": 60,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_023/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 24,
+          "episodes": 100,
+          "groups": 3,
+          "requests": [
+            {
+              "request": "task_024/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_024/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_024/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_024/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_024/round2",
+              "images": 36,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_024/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 25,
+          "episodes": 100,
+          "groups": 1,
+          "requests": [
+            {
+              "request": "task_025/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_025/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_025/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_025/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_025/round2",
+              "images": 12,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_025/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 26,
+          "episodes": 100,
+          "groups": 1,
+          "requests": [
+            {
+              "request": "task_026/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_026/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_026/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_026/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_026/round2",
+              "images": 12,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_026/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 27,
+          "episodes": 100,
+          "groups": 1,
+          "requests": [
+            {
+              "request": "task_027/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_027/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_027/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_027/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_027/round2",
+              "images": 12,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_027/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 28,
+          "episodes": 100,
+          "groups": 3,
+          "requests": [
+            {
+              "request": "task_028/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_028/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_028/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_028/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_028/round2",
+              "images": 36,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_028/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 29,
+          "episodes": 100,
+          "groups": 1,
+          "requests": [
+            {
+              "request": "task_029/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_029/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_029/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_029/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_029/round2",
+              "images": 68,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_029/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 30,
+          "episodes": 100,
+          "groups": 6,
+          "requests": [
+            {
+              "request": "task_030/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_030/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_030/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_030/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_030/round2",
+              "images": 72,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_030/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 31,
+          "episodes": 100,
+          "groups": 1,
+          "requests": [
+            {
+              "request": "task_031/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_031/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_031/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_031/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_031/round2",
+              "images": 12,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_031/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 32,
+          "episodes": 100,
+          "groups": 1,
+          "requests": [
+            {
+              "request": "task_032/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_032/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_032/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_032/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_032/round2",
+              "images": 12,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_032/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 33,
+          "episodes": 100,
+          "groups": 1,
+          "requests": [
+            {
+              "request": "task_033/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_033/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_033/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_033/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_033/round2",
+              "images": 24,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_033/round2/attempt_001"
+            }
+          ]
+        },
+        {
+          "task_id": 34,
+          "episodes": 100,
+          "groups": 1,
+          "requests": [
+            {
+              "request": "task_034/round1/batch_000",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_034/round1/batch_000/attempt_001"
+            },
+            {
+              "request": "task_034/round1/batch_001",
+              "images": 100,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_034/round1/batch_001/attempt_001"
+            },
+            {
+              "request": "task_034/round2",
+              "images": 12,
+              "recovery_request": false,
+              "original_attempt": "/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511/task_034/round2/attempt_001"
+            }
+          ]
+        }
+      ],
+      "ignored_input_fields": [
+        "signature (derived from output paths)",
+        "images[].sent_path"
+      ],
+      "comparison": "all other input fields and all final/candidate/output fields compared exactly"
+    },
+    "manual_review_standard": {
+      "episodes_matched": 3500,
+      "all_business_fields_exact": true,
+      "ignored": [
+        "generated_at"
+      ]
+    }
+  },
+  "errors": {},
+  "finished_at": "2026-11-12T03:02:11.119509+00:00"
+}

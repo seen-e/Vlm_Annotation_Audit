@@ -1,0 +1,48 @@
+{
+  "extraction_identity_equal": true,
+  "embedding": {
+    "images": 7000,
+    "source_and_preprocess_records_equal": true,
+    "features": {
+      "cls": {
+        "bit_exact": true,
+        "max_abs_error": 0.0,
+        "elements_changed": 0
+      },
+      "patch_mean": {
+        "bit_exact": true,
+        "max_abs_error": 0.0,
+        "elements_changed": 0
+      },
+      "spatial_2x2": {
+        "bit_exact": true,
+        "max_abs_error": 0.0,
+        "elements_changed": 0
+      }
+    }
+  },
+  "dual_cls": {
+    "full_task_json_exact": 35,
+    "metrics_json_exact": 35,
+    "episodes": 3500,
+    "new_gpu_labels_exact_tasks": 35,
+    "new_gpu_label_disagreements": 0,
+    "different_task_json": [],
+    "assignments_csv_exact": true,
+    "summary_business_values_equal": true,
+    "viewer_images_exact": 3500,
+    "viewer_images_total": 3500
+  },
+  "last_cls": {
+    "full_task_json_exact": 35,
+    "metrics_json_exact": 35,
+    "episodes": 3500,
+    "new_gpu_labels_exact_tasks": 35,
+    "new_gpu_label_disagreements": 0,
+    "different_task_json": [],
+    "assignments_csv_exact": true,
+    "summary_business_values_equal": true,
+    "viewer_images_exact": 3500,
+    "viewer_images_total": 3500
+  }
+}

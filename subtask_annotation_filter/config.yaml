@@ -1,0 +1,22 @@
+# Relative paths are resolved from this file. No credentials are written to results.
+standards_path: /mnt/data/chachaxu/dataset/robodojo/robodojo_review_standard.json # Per-episode standards JSON.
+annotations_root: /mnt/data/chachaxu/dataset/robodojo/robodojo_merged_stage1to4_20261106 # Existing final annotations.
+annotation_pattern: "{episode_id}/final.json" # Exact path, no automatic version fallback.
+output_root: /mnt/data/chachaxu/dataset/robodojo/subtask_annotation_filter_runs/robodojo3500_thinking48_20261111_192924 # Independent experiment.
+episode_ids: [] # Empty means every episode present in the standards file.
+episode_batchsize: 48 # Concurrent episodes; one complete episode per request.
+input_workers: 32 # Parallel read-only preflight; all inputs must validate before API calls.
+model:
+  credentials_file: ../.credentials/xb4v.yaml # Existing xb4v credentials; key never copied to results.
+  base_url: null # Explicit value overrides credentials file; otherwise use base_url_env.
+  base_url_env: ANOMALY_BASE_URL
+  api_key_env: ANOMALY_API_KEY # API key is loaded from env or credentials_file, not stored here.
+  name: null # Explicit model name; otherwise credentials file or model_env.
+  model_env: ANOMALY_MODEL
+  thinking: true # Qwen chat_template_kwargs.enable_thinking; null omits this provider-specific parameter.
+  temperature: 0
+  max_tokens: 8192 # Output limit. Truncated responses are failures, not successful reviews.
+  stream: true
+  timeout_sec: 600 # API timeout.
+  attempts: 3 # Total attempts per episode per run, including schema failures.
+  retry_delay_sec: 5

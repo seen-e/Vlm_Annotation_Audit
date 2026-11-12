@@ -1,0 +1,549 @@
+{
+  "episodes": 77,
+  "matched": 77,
+  "full_attempt_messages_matched": 119,
+  "incomplete_attempts_not_replayable": 47,
+  "errors": [],
+  "details": [
+    {
+      "episode_id": "robodojo_episode_000105",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_000142",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_000519",
+      "attempt_messages_exact": 3,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_000603",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_000640",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_000651",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_000653",
+      "attempt_messages_exact": 3,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_000666",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_001128",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_001148",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_001149",
+      "attempt_messages_exact": 3,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_001192",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_001710",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_001712",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_001721",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_001749",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_001759",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_001764",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_001776",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_001974",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_001988",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002005",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002018",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002019",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002026",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002029",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002039",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002046",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002047",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002048",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002049",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002052",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002053",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002054",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002055",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002057",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002058",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002059",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002063",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002067",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002068",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002069",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002071",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002073",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002074",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002075",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002076",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002077",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002078",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002081",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002084",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002085",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002087",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002088",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002089",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002090",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002091",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002092",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002093",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002094",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002095",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002096",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002097",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002098",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002099",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002100",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002101",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002102",
+      "attempt_messages_exact": 1,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 1,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002502",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002506",
+      "attempt_messages_exact": 3,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002518",
+      "attempt_messages_exact": 3,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002530",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002541",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002546",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_002565",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_003321",
+      "attempt_messages_exact": 2,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": false
+    },
+    {
+      "episode_id": "robodojo_episode_001102",
+      "attempt_messages_exact": 6,
+      "result_exact": true,
+      "incomplete_attempts_not_replayable": 0,
+      "original_failed": true
+    }
+  ],
+  "paid_api_calls": 0
+}

@@ -1,0 +1,2 @@
+# Preserve original source bytes: embedding cache identities include source hashes.
+* -text
