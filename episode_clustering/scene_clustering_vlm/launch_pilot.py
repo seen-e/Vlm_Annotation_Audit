@@ -17,7 +17,7 @@ def main():
     args = parser.parse_args()
     if args.task_workers < 1:
         raise ValueError('task_workers must be positive')
-    root = Path('/mnt/workspace/EmbeddingCluster_Exp')
+    root = Path(__file__).resolve().parents[2]
     source = args.credentials_source
     raw = yaml.safe_load(source.read_text(encoding='utf-8'))
     matches = []
@@ -46,7 +46,7 @@ def main():
     credentials = private / 'xb4v.yaml'
     credentials.write_text(yaml.safe_dump(auth), encoding='utf-8')
     credentials.chmod(0o600)
-    cfg = yaml.safe_load((root / 'scene_clustering_vlm/config.yaml').read_text())
+    cfg = yaml.safe_load(Path(__file__).with_name('config.yaml').read_text())
     label = 'full3500' if args.all_tasks else 'pilot100'
     out = Path('/mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments') / time.strftime('first_last_batch50_xb4v_' + label + '_%Y%m%d_%H%M%S')
     out.mkdir(parents=True, exist_ok=False)
@@ -55,7 +55,7 @@ def main():
     cfg['api']['credentials_file'] = str(credentials)
     path = out / 'run_config.yaml'
     path.write_text(yaml.safe_dump(cfg, allow_unicode=True, sort_keys=False), encoding='utf-8')
-    command = [sys.executable, '-u', '-m', 'scene_clustering_vlm.run', '--config', str(path)]
+    command = [sys.executable, '-u', '-m', 'episode_clustering.scene_clustering_vlm.run', '--config', str(path)]
     # The runner validates all metadata and saves the full plan before API requests.
     if not args.all_tasks:
         subprocess.run(command + ['--dry-run'], cwd=root, check=True)

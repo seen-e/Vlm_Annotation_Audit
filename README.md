@@ -7,14 +7,14 @@
 
 | 模块 | 功能 | 使用说明 |
 | --- | --- | --- |
-| `embedding_extraction` | DINOv3 首尾帧 embedding 批量提取 | [ReadMe](embedding_extraction/ReadMe.md) |
-| `scene_clustering_dino` | HDBSCAN 场景聚类及未归类结果的 VLM 补充聚类 | [ReadMe](scene_clustering_dino/ReadMe.md) |
-| `scene_clustering_vlm` | 基于首帧、尾帧或首尾帧的两轮 API 聚类 | [ReadMe](scene_clustering_vlm/ReadMe.md) |
-| `manual_review_standard` | 人工填写任务/组标准并展开到 episode | [ReadMe](manual_review_standard/ReadMe.md) |
-| `subtask_annotation_filter` | 审核标准与最终标注的并发异常筛查 | [ReadMe](subtask_annotation_filter/ReadMe.md) |
+| `episode_clustering` | Episode 场景聚类：DINO/HDBSCAN 与两轮 VLM API 聚类 | [ReadMe](episode_clustering/ReadMe.md) |
+| `review_standard` | 审核标准生成：人工填写、原始指令 API 翻译并映射到 episode | [ReadMe](review_standard/ReadMe.md) |
+| `annotatiuon_audit` | 审核标准与最终标注的并发异常筛查 | [ReadMe](annotatiuon_audit/ReadMe.md) |
 
-附属模块：`subtask_annotation_filter/vlm_subtask_reasoning` 为纯文本推理描述补充；
-`subtask_annotation_filter/visualization` 为异常候选查看器导出工具。
+附属模块：`annotatiuon_audit/vlm_subtask_reasoning` 为纯文本推理描述补充；
+`annotatiuon_audit/visualization` 为异常候选查看器导出工具。
+DINO 特征提取位于 `episode_clustering/scene_clustering_dino/embedding_extraction`，
+使用说明见其 [ReadMe](episode_clustering/scene_clustering_dino/embedding_extraction/ReadMe.md)。
 
 ## 配置与运行
 
@@ -28,13 +28,14 @@ API 密钥不进入 Git。异常筛查默认读取 `.credentials/xb4v.yaml`，�
 `model.credential_config`，或将其设为空并使用该模块的环境变量。
 
 ```bash
-python -m embedding_extraction.fast --help
-python -m scene_clustering_dino.run --help
-python -m scene_clustering_vlm.run --help
-python -m subtask_annotation_filter.run --dry-run
+python -m episode_clustering.scene_clustering_dino.embedding_extraction.fast --help
+python -m episode_clustering.scene_clustering_dino.run --help
+python -m episode_clustering.scene_clustering_vlm.run --help
+python -m annotatiuon_audit.run --dry-run
+python -m review_standard.vlm_review_standard.run --dry-run
 
 # 离线单元测试，不调用模型 API。
-python -m unittest embedding_extraction.test_features scene_clustering_dino.test_clustering scene_clustering_dino.test_refine_noise scene_clustering_vlm.test_pipeline subtask_annotation_filter.test_pipeline
+python -m unittest episode_clustering.scene_clustering_dino.embedding_extraction.test_features episode_clustering.scene_clustering_dino.test_clustering episode_clustering.scene_clustering_dino.test_refine_noise episode_clustering.scene_clustering_vlm.test_pipeline annotatiuon_audit.test_pipeline
 ```
 
 ## 同步范围

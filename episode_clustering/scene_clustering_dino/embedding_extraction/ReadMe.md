@@ -1,6 +1,11 @@
 # embedding_extraction 使用说明
 
-更新：2026-11-11。部署位置：1015，`/mnt/workspace/Subtask_Annotation _Review/embedding_extraction`。
+本模块现位于 `episode_clustering/scene_clustering_dino/embedding_extraction`。
+Python 文件保持字节不变，避免仅因移动目录或修改注释而改变历史缓存的源码签名。
+`run.py` 顶部保留了旧命令说明；实际运行请使用本文的新模块命令。
+配置、模型与特征输出路径不变，目录移动本身不影响已有缓存签名。
+
+更新：2026-11-11。部署位置：1015，`/mnt/workspace/Subtask_Annotation _Review/episode_clustering/scene_clustering_dino/embedding_extraction`。
 
 ## 1. 用途与边界
 
@@ -65,18 +70,18 @@ cache_root/
 
 ```bash
 cd '/mnt/workspace/Subtask_Annotation _Review'
-python -m embedding_extraction.run --help
-python -m embedding_extraction.fast --help
-python -m unittest embedding_extraction.test_features
+python -m episode_clustering.scene_clustering_dino.embedding_extraction.run --help
+python -m episode_clustering.scene_clustering_dino.embedding_extraction.fast --help
+python -m unittest episode_clustering.scene_clustering_dino.embedding_extraction.test_features
 
 # 16个episode，共32张图；不等于batch=32。
-python -m embedding_extraction.run --limit-episodes 16 --batch-size 32
+python -m episode_clustering.scene_clustering_dino.embedding_extraction.run --limit-episodes 16 --batch-size 32
 
 # 中间层、较大输入的小规模实验。
-python -m embedding_extraction.run --layer-from-end 4 --image-size 448 --batch-size 8 --limit-episodes 2
+python -m episode_clustering.scene_clustering_dino.embedding_extraction.run --layer-from-end 4 --image-size 448 --batch-size 8 --limit-episodes 2
 
 # 全量分片提取，512张/GPU批次，16个读图线程。
-python -m embedding_extraction.fast --batch-size 512 --io-workers 16
+python -m episode_clustering.scene_clustering_dino.embedding_extraction.fast --batch-size 512 --io-workers 16
 ```
 
 `run.py` 还支持 `--model-path`、`--cache-root`、`--output-root`、`--device`、`--dtype`、`--force` 等覆盖；以 `--help` 为准。fast 没有 `--image-size`，需改 YAML。CPU 大批量可能很慢，不应照搬 GPU batch512。
@@ -95,7 +100,7 @@ fast 入口：`robodojo_embeddings_fast/<签名前16位>/`，内含 `config.json
 | patches / patch_valid_weights | 随网格变化 | 仅save_patches开启时保存 |
 
 当前已有全量结果：`/mnt/data/chachaxu/embedding_cluster/robodojo_embeddings_fast/b82d9eb5438dcf56`，7000张、14片。该哈希是已有实验，不保证新环境或代码生成相同目录。
-将包含 `config.json` 和分片清单的目录传给 `scene_clustering_dino.run --features`。
+将包含 `config.json` 和分片清单的目录传给 `episode_clustering.scene_clustering_dino.run --features`。
 
 ## 7. 续跑、进度与故障
 

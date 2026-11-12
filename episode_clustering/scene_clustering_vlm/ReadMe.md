@@ -1,6 +1,6 @@
 # scene_clustering_vlm 使用说明
 
-更新：2026-11-11。部署位置：1015，`/mnt/workspace/Subtask_Annotation _Review/scene_clustering_vlm`。
+更新：2026-11-11。部署位置：1015，`/mnt/workspace/Subtask_Annotation _Review/episode_clustering/scene_clustering_vlm`。
 
 ## 1. 用途与流程
 
@@ -27,7 +27,7 @@
 | retry_failed.py | 本批实验专用的提高输出预算补漏入口 |
 | test_pipeline.py | 模拟API测试 |
 
-历史quick_viewer.html、review_standards.js、build_quick_local.cjs仍在本目录兼容旧页面。新的人工标准功能请使用并列的 `manual_review_standard` 模块，避免把聚类和人工审核混为一体。
+历史quick_viewer.html、review_standards.js、build_quick_local.cjs仍在本目录兼容旧页面。新的人工标准功能请使用 `review_standard/manual_review_standard` 模块，避免把聚类和人工审核混为一体。
 
 依赖：Python、PyYAML、Pillow、PyArrow、OpenAI SDK。无需本地GPU，推理由配置的API完成。
 
@@ -81,15 +81,15 @@ first_last下50条对应100张图。第二轮实际代表图超过容量直接�
 
 ```bash
 cd '/mnt/workspace/Subtask_Annotation _Review'
-python -m scene_clustering_vlm.run --help
-python -m unittest scene_clustering_vlm.test_pipeline
+python -m episode_clustering.scene_clustering_vlm.run --help
+python -m unittest episode_clustering.scene_clustering_vlm.test_pipeline
 
 # 仅校验输入并写dry_run_plan.json，无API请求。
-python -m scene_clustering_vlm.run --config scene_clustering_vlm/config.yaml \
+python -m episode_clustering.scene_clustering_vlm.run --config episode_clustering/scene_clustering_vlm/config.yaml \
   --task-id 0 --output-root /mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/NEW_RUN --dry-run
 
 # 配好API并审核提示词后，去掉dry-run执行。
-python -m scene_clustering_vlm.run --config scene_clustering_vlm/config.yaml \
+python -m episode_clustering.scene_clustering_vlm.run --config episode_clustering/scene_clustering_vlm/config.yaml \
   --task-id 0 --frame-mode first_last --episodes-per-batch 50 \
   --representatives-per-cluster 3 \
   --output-root /mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/NEW_RUN
@@ -123,7 +123,7 @@ input.json保存完整提示词、payload、图片来源/发送哈希和参数�
 retry_failed.py是此前全量实验的**专用**补漏工具，不是普通run入口的通用必选项：
 
 ```bash
-python -m scene_clustering_vlm.retry_failed /path/to/existing_run
+python -m episode_clustering.scene_clustering_vlm.retry_failed /path/to/existing_run
 ```
 
 它要求实验目录额外具备run_config.yaml、summary.json、failures.json、progress.json，且凭据路径仍有效。普通run.py不会自动生成run_config.yaml。默认后台启动，PID在recovery_launch.json，日志在recovery.log；--worker用于前台工作模式。
@@ -133,9 +133,9 @@ API服务可能不支持该预算，使用前检查。此工具不能代替通�
 ## 9. 可视化与已有结果
 
 ```bash
-python -m scene_clustering_vlm.build_viewer /path/to/run
+python -m episode_clustering.scene_clustering_vlm.build_viewer /path/to/run
 # 运行未结束时，只展示已有final.json的任务快照：
-python -m scene_clustering_vlm.build_viewer /path/to/run --completed-only
+python -m episode_clustering.scene_clustering_vlm.build_viewer /path/to/run --completed-only
 ```
 
 输出在run/viewer，优先复用已发送JPEG；查看器是生成时快照，不会后台自动更新。人工审核标准填写使用manual_review_standard构建器，不是这个高分辨率查看器。

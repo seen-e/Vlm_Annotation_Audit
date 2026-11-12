@@ -1,6 +1,9 @@
 # scene_clustering_dino 使用说明
 
-更新：2026-11-11。部署位置：1015，`/mnt/workspace/Subtask_Annotation _Review/scene_clustering_dino`。
+特征提取子模块：[`embedding_extraction`](embedding_extraction/ReadMe.md)。
+先提取首尾帧特征，再将分片目录传入本模块的 `--features` 参数。
+
+更新：2026-11-11。部署位置：1015，`/mnt/workspace/Subtask_Annotation _Review/episode_clustering/scene_clustering_dino`。
 
 ## 1. 用途
 
@@ -23,7 +26,7 @@
 
 ## 3. 输入约束
 
-`--features` 必须指向 **embedding_extraction.fast 的分片输出目录**，含 `config.json`、`manifest.json`、分片NPZ及records。当前不能直接读取逐图入口输出。
+`--features` 必须指向 **episode_clustering.scene_clustering_dino.embedding_extraction.fast 的分片输出目录**，含 `config.json`、`manifest.json`、分片NPZ及records。当前不能直接读取逐图入口输出。
 
 每个episode必须同时具有first/last记录，即便选择last_cls，当前代码仍要求首尾配对，用于身份、任务核对及预览图。图片来源和分片路径从记录中读取并核查SHA256，源图不可丢失。
 
@@ -50,11 +53,11 @@ dual_cls：首尾CLS分别L2归一化，分别乘sqrt(0.5)，拼接后整体归�
 
 ```bash
 cd '/mnt/workspace/Subtask_Annotation _Review'
-python -m scene_clustering_dino.run --help
-python -m unittest scene_clustering_dino.test_clustering
+python -m episode_clustering.scene_clustering_dino.run --help
+python -m unittest episode_clustering.scene_clustering_dino.test_clustering
 
 # 必须换成未存在的新输出目录。
-OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -m scene_clustering_dino.run \
+OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -m episode_clustering.scene_clustering_dino.run \
   --features /mnt/data/chachaxu/embedding_cluster/robodojo_embeddings_fast/b82d9eb5438dcf56 \
   --feature-mode dual_cls --min-cluster-size 5 --min-samples 2 \
   --output /mnt/data/chachaxu/embedding_cluster/robodojo_experiments/NEW_DUAL_RUN
@@ -91,14 +94,14 @@ Medoid为簇内平均余弦相似度最高成员；中心最多8条，边缘最�
 
 ## 7. 对未归类成员做VLM补充分组
 
-复用 `scene_clustering_vlm/config.yaml` 的图像模式、每批数量、代表数、task_workers和API配置；输出由此入口的 `--output` 决定。
+复用 `episode_clustering/scene_clustering_vlm/config.yaml` 的图像模式、每批数量、代表数、task_workers和API配置；输出由此入口的 `--output` 决定。
 
 ```bash
 cd '/mnt/workspace/Subtask_Annotation _Review'
-python -m scene_clustering_dino.refine_noise \
+python -m episode_clustering.scene_clustering_dino.refine_noise \
   --dino-result /mnt/data/chachaxu/embedding_cluster/robodojo_experiments/last_cls_hdbscan_20261111_v1 \
   --output /mnt/data/chachaxu/embedding_cluster/robodojo_experiments/NEW_HYBRID_RUN \
-  --vlm-config scene_clustering_vlm/config.yaml --dry-run
+  --vlm-config episode_clustering/scene_clustering_vlm/config.yaml --dry-run
 ```
 
 检查dry_run_plan后去掉dry-run才调用API。没有未归类成员时不会读取凭据或发请求。输出不能等于原DINO目录或与之构成父子目录。

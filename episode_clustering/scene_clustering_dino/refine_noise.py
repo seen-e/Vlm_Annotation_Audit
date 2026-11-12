@@ -9,10 +9,10 @@ import time
 
 import yaml
 
-from scene_clustering_vlm.api import credentials, save, signature
-from scene_clustering_vlm.round1_prompt import PROMPT as ROUND1
-from scene_clustering_vlm.round2_prompt import PROMPT as ROUND2
-from scene_clustering_vlm.run import load_tasks, run_task, validate_config
+from ..scene_clustering_vlm.api import credentials, save, signature
+from ..scene_clustering_vlm.round1_prompt import PROMPT as ROUND1
+from ..scene_clustering_vlm.round2_prompt import PROMPT as ROUND2
+from ..scene_clustering_vlm.run import load_tasks, run_task, validate_config
 
 
 def read_dino(root):

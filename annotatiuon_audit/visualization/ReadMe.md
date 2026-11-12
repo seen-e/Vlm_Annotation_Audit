@@ -2,8 +2,9 @@
 
 ## Purpose
 
-Export a read-only snapshot of completed `anomaly` reviews, with at most two
-episodes per task. The ongoing inference run is neither stopped nor modified.
+Export a read-only snapshot of completed `anomaly` reviews. By default, select
+at most two episodes per task; `--max-per-task 0` exports all anomaly candidates.
+The ongoing inference run is neither stopped nor modified.
 Candidates are not independently verified visual errors. `normal` and
 `uncertain` episodes are excluded.
 
@@ -11,7 +12,8 @@ Candidates are not independently verified visual errors. `normal` and
 
 `anomalies.json` is read once. Episodes are sorted by their original ID, grouped
 by the task ID in the exported review standards, and the first two in each
-group are selected. Tasks with fewer candidates contribute fewer episodes.
+group are selected by default. Use `--max-per-task N` to change this limit, or
+zero to disable it. Tasks with fewer candidates contribute fewer episodes.
 The export contains `selection.json`, including snapshot progress and the exact
 selection rule. Progress and anomaly aggregates are read separately and may
 differ slightly while the background process writes new results.
@@ -33,7 +35,7 @@ python3 export_snapshot.py \
   --cache /mnt/data/chachaxu/embedding_cluster/robodojo
 ```
 
-Video extraction uses four workers, two encoder threads each. It starts at
+Video extraction defaults to four workers (`--workers N`), two encoder threads each. It starts at
 the cached source frame offset and decodes exactly the episode frame count.
 ffprobe verifies every exported video's decoded frame count.
 Use a new output directory for each snapshot to preserve earlier selections.

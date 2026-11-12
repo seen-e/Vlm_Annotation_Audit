@@ -6,8 +6,17 @@ const assert = require('assert');
 (async()=>{
  const dir=process.argv[2];
  const data=JSON.parse(fs.readFileSync(path.join(dir,'selection.json'),'utf8'));
+ assert.equal(new Set(data.episodes.map(e=>e.episode_id)).size,data.episodes.length);
+ for(const e of data.episodes){
+   const folder=path.join(dir,'episodes',e.episode_id);
+   assert.deepEqual(JSON.parse(fs.readFileSync(path.join(folder,'review.json'),'utf8')),e.review);
+   assert.deepEqual(JSON.parse(fs.readFileSync(path.join(folder,'final.json'),'utf8')),e.annotation);
+   assert.deepEqual(JSON.parse(fs.readFileSync(path.join(folder,'review_input.json'),'utf8')).final_annotation,e.annotation);
+   for(const name of ['first.png','last.png','video.mp4','sample_manifest.json','video_source.json'])assert(fs.statSync(path.join(folder,name)).size>0);
+ }
  const groups={};for(const e of data.episodes){groups[e.task_id]=(groups[e.task_id]||0)+1;assert.equal(e.review.review_status,'anomaly');for(const issue of e.review.issues)for(const ev of issue.evidence){let val=e.annotation;for(const key of ev.path.split('/').slice(1))val=val[key.replace(/~1/g,'/').replace(/~0/g,'~')];assert.equal(typeof val,'string');assert(val.includes(ev.quote));}for(const b of e.bounds)assert(b.start!==null&&b.end>b.start&&b.end<=e.duration);}
- assert(Object.values(groups).every(n=>n<=2));
+ if(data.max_per_task!==0)assert(Object.values(groups).every(n=>n<=(data.max_per_task??2)));
+ else assert.equal(data.episodes.length,data.progress.anomaly);
  const browser=await chromium.launch({channel:'msedge',headless:true});
  const context=await browser.newContext({viewport:{width:1440,height:1000}});
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
@@ -18,9 +27,11 @@ const assert = require('assert');
    await page.waitForFunction(()=>document.getElementById('video').readyState>=2);
    const m=await page.locator('video').evaluate(v=>({w:v.videoWidth,h:v.videoHeight,t:v.duration}));
    assert.equal(m.w,640);assert.equal(m.h,480);assert(Math.abs(m.t-e.duration)<0.15);
+   if((data.episodes.indexOf(e)+1)%50===0)console.log(`Verified videos: ${data.episodes.indexOf(e)+1}/${data.episodes.length}`);
  }
  await page.locator('.episode').first().click();await page.waitForFunction(()=>document.getElementById('video').readyState>=2);
  await page.locator('#subtasks [data-jump]').first().click();
+ await page.waitForFunction(()=>{const v=document.getElementById('video');return !v.paused&&!v.seeking&&v.readyState>=2});
  const end=data.episodes[0].bounds[0].end;
  await page.locator('video').evaluate((v,t)=>{v.currentTime=t+0.1;v.dispatchEvent(new Event('timeupdate'))},end);
  assert(await page.locator('video').evaluate(v=>v.paused));

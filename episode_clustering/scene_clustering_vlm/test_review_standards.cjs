@@ -1,7 +1,7 @@
 const {chromium}=require('C:/Users/34927/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
 const fs=require('fs'),path=require('path');const {pathToFileURL}=require('url');
 (async()=>{
-  const root=process.argv[2],qa=path.resolve('scene_clustering_vlm/.standards_test');fs.mkdirSync(qa,{recursive:true});
+  const root=process.argv[2],qa=path.join(__dirname,'.standards_test');fs.mkdirSync(qa,{recursive:true});
   const b=await chromium.launch({channel:'msedge',headless:true}),p=await b.newPage({viewport:{width:1440,height:1000},acceptDownloads:true}),errors=[];
   p.on('pageerror',e=>errors.push(e.message));p.on('dialog',d=>d.accept());
   await p.goto(pathToFileURL(root+'/index.html').href);

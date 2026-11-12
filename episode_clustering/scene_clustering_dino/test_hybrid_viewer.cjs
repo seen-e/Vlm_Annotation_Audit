@@ -6,8 +6,8 @@ const {chromium}=require('C:/Users/34927/.cache/codex-runtimes/codex-primary-run
   const context={window:{}};vm.runInNewContext(fs.readFileSync(source+'/data.js','utf8'),context);
   const data=JSON.parse(JSON.stringify(context.window.DATA)),summary=JSON.parse(JSON.stringify(context.window.SUMMARY));
   for(const t of data)for(const e of t.episodes)e.image=pathToFileURL(source+'/'+e.image).href;
-  const out=path.resolve('scene_clustering_dino/.viewer_test');fs.mkdirSync(out,{recursive:true});
-  fs.copyFileSync('scene_clustering_dino/viewer.html',out+'/index.html');
+  const out=path.join(__dirname,'.viewer_test');fs.mkdirSync(out,{recursive:true});
+  fs.copyFileSync(path.join(__dirname,'viewer.html'),out+'/index.html');
   const write=(d,s)=>fs.writeFileSync(out+'/data.js','window.DATA='+JSON.stringify(d)+';window.SUMMARY='+JSON.stringify(s)+';');
   write(data,summary);
   const b=await chromium.launch({channel:'msedge',headless:true}),p=await b.newPage({viewport:{width:1440,height:1000}}),errors=[];

@@ -1,12 +1,12 @@
 # manual_review_standard 使用说明
 
-更新：2026-11-11。部署位置：1015，`/mnt/workspace/Subtask_Annotation _Review/manual_review_standard`。
+更新：2026-11-12。部署位置：1015/1013，`/mnt/workspace/Subtask_Annotation _Review/review_standard/manual_review_standard`。
 
 ## 1. 用途与工作流
 
 在聚类可视化中填写任务级和组级审核标准，将其展开为每个episode的有效标准，供异常筛选使用。本模块不调用模型、不判断标注正误、不修改聚类成员。
 
-流程：构建或打开页面 → 选择任务 → 填任务默认标准 → 逐组填写可选覆盖标准 → 保存 → 导出JSON → 展开到episode → 将结果交给subtask_annotation_filter。
+流程：构建或打开页面 → 选择任务 → 填任务默认标准 → 逐组填写可选覆盖标准 → 保存 → 导出JSON → 展开到episode → 将结果交给annotatiuon_audit。
 
 ## 2. 文件结构
 
@@ -45,7 +45,7 @@ manual_review_standard/
 相对路径基于config.json目录，不是当前shell位置。默认输入指向此前全量VLM结果和DINO尾帧查看器的缩略图缓存，复用图像不意味着使用DINO组归属。
 
 ```bash
-cd '/mnt/workspace/Subtask_Annotation _Review/manual_review_standard'
+cd '/mnt/workspace/Subtask_Annotation _Review/review_standard/manual_review_standard'
 node build_viewer.cjs config.json
 ```
 
@@ -56,7 +56,7 @@ node build_viewer.cjs config.json
 ## 4. 打开和填写
 
 当前远程页面：
-`/mnt/workspace/Subtask_Annotation _Review/manual_review_standard/datasets/robodojo3500/viewer/index.html`。
+`/mnt/workspace/Subtask_Annotation _Review/review_standard/manual_review_standard/datasets/robodojo3500/viewer/index.html`。
 
 可将整个datasets/robodojo3500复制到本地再打开viewer/index.html。保留task_*目录才能使用原始结果JSON链接，保留viewer/images才能显示图像。只有HTML一个文件不够。远程文件路径不是其他电脑可直接访问的公开网址。
 
@@ -88,7 +88,7 @@ node build_viewer.cjs config.json
 ## 7. 展开为每个episode的标准
 
 ```bash
-cd '/mnt/workspace/Subtask_Annotation _Review/manual_review_standard'
+cd '/mnt/workspace/Subtask_Annotation _Review/review_standard/manual_review_standard'
 node expand_review_standards.cjs \
   datasets/robodojo3500/standards/robodojo_review_standards_2026-11-11T10-33-05-569Z.json \
   datasets/robodojo3500 \

@@ -1,0 +1,19 @@
+# Paths are relative to this config unless absolute.
+episode_manifest: /mnt/data/chachaxu/embedding_cluster/robodojo/selection.json # Episode IDs and original tasks; no images are sent.
+tasks_path: /mnt/data/chengyezhao/RoboDojo_ee_lerobot_v30_video/meta/tasks.parquet # Authoritative task IDs and original instructions.
+output_root: /mnt/data/chachaxu/dataset/robodojo/vlm_review_standard_runs/original_instruction_zh_v1 # Separate from manual standards; change for new prompts/settings.
+task_batchsize: 8 # Concurrent unique-instruction requests, not concurrent episodes.
+model:
+  credentials_file: ../../.credentials/xb4v.yaml # Framework-root credentials; never copied into results.
+  base_url: null # Override endpoint; otherwise use credentials or environment.
+  base_url_env: REVIEW_STANDARD_BASE_URL # Endpoint fallback environment variable.
+  api_key_env: REVIEW_STANDARD_API_KEY # Environment key overrides credentials file.
+  name: null # Override model; otherwise use credentials or environment.
+  model_env: REVIEW_STANDARD_MODEL # Model fallback environment variable.
+  thinking: false # Translation defaults to no thinking; null omits the provider-specific option.
+  temperature: 0 # Sampling temperature.
+  max_tokens: 2048 # Maximum response tokens; truncated output is rejected.
+  stream: true # Collect streamed content before validation.
+  timeout_sec: 180 # Timeout per API request.
+  attempts: 3 # Attempts per unique instruction per invocation.
+  retry_delay_sec: 3 # Delay between failed attempts.

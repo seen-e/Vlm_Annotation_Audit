@@ -33,8 +33,8 @@ class PipelineTests(unittest.TestCase):
     def test_unapproved_prompt_blocks_requests(self):
         self.assertTrue(prompts.PROMPT.strip())
         with patch.object(prompts, 'APPROVED', False), patch('sys.argv', ['run']), \
-                patch('subtask_annotation_filter.run.load_config', return_value=self.cfg), \
-                patch('subtask_annotation_filter.run.prepare') as prepare_mock:
+                patch('annotatiuon_audit.run.load_config', return_value=self.cfg), \
+                patch('annotatiuon_audit.run.prepare') as prepare_mock:
             with self.assertRaises(SystemExit):
                 main()
             prepare_mock.assert_not_called()

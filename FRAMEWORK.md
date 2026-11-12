@@ -7,17 +7,16 @@
 
 | 模块 | 用途 | 使用说明 |
 | --- | --- | --- |
-| embedding_extraction | 本地DINOv3首尾帧特征提取 | [ReadMe.md](embedding_extraction/ReadMe.md) |
-| scene_clustering_dino | 基于向量的任务内HDBSCAN及可选噪声VLM分组 | [ReadMe.md](scene_clustering_dino/ReadMe.md) |
-| scene_clustering_vlm | 首/尾帧两轮API聚类 | [ReadMe.md](scene_clustering_vlm/ReadMe.md) |
-| manual_review_standard | 人工填写任务/组标准、导出并展开到episode | [ReadMe.md](manual_review_standard/ReadMe.md) |
-| subtask_annotation_filter | 标准加最终标注的并发审核基础框架 | [ReadMe.md](subtask_annotation_filter/ReadMe.md) |
+| episode_clustering | Episode场景聚类：DINO/HDBSCAN与两轮VLM API聚类 | [ReadMe.md](episode_clustering/ReadMe.md) |
+| review_standard | 审核标准生成：人工填写或原始指令API翻译，映射到episode | [ReadMe.md](review_standard/ReadMe.md) |
+| annotatiuon_audit | 标准加最终标注的并发审核基础框架 | [ReadMe.md](annotatiuon_audit/ReadMe.md) |
 
 ## 数据流
 
-已有首尾帧缓存 → embedding_extraction.fast → scene_clustering_dino。
-已有首尾帧缓存 → scene_clustering_vlm → manual_review_standard → 每episode审核标准。
-每episode审核标准 + 最终subtask标注 → subtask_annotation_filter（首轮实验已获用户授权，结果需人工复核）。
+已有首尾帧缓存 → episode_clustering.scene_clustering_dino.embedding_extraction.fast → episode_clustering/scene_clustering_dino。
+已有首尾帧缓存 → episode_clustering/scene_clustering_vlm → review_standard/manual_review_standard → 每episode审核标准。
+原始任务指令及episode映射 → review_standard/vlm_review_standard → 每episode中文指令标准。
+每episode审核标准 + 最终subtask标注 → annotatiuon_audit（首轮实验已获用户授权，结果需人工复核）。
 
 DINO聚类与VLM聚类是可选分支，不要求先跑DINO再跑全量VLM。DINO中的refine_noise只对其未归类成员调用VLM。
 人工标准模块当前接受VLM两轮输出；不能把DINO clusters.json直接当成它的final.json输入。
@@ -27,7 +26,7 @@ DINO聚类与VLM聚类是可选分支，不要求先跑DINO再跑全量VLM。DIN
 - RoboDojo缓存3500个episode，对应7000张首尾图像。
 - 当前全量VLM结果35任务、199组；人工模块保存完整可视化包。
 - 正式标准文件：`/mnt/data/chachaxu/dataset/robodojo/robodojo_review_standard.json`，3500条有效标准。
-- subtask_annotation_filter已按用户要求启动3500条首轮实验，思考模式开启、episode并发48；不是已完成预测或已通过质量验收。
+- annotatiuon_audit已按用户要求启动3500条首轮实验，思考模式开启、episode并发48；不是已完成预测或已通过质量验收。
 - 聚类分组不是异常标签，人工标准也不是模型审核结果。
 - 各模块并发含义不同：特征batch按图像，VLM task_workers按任务，异常episode_batchsize按episode。
 

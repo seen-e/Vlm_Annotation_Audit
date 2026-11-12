@@ -1,6 +1,11 @@
-# subtask_annotation_filter 使用说明
+# annotatiuon_audit 使用说明
 
-更新：2026-11-11。部署位置：1015，`/mnt/workspace/Subtask_Annotation _Review/subtask_annotation_filter`。
+目录按用户指定拼写重命名为 `annotatiuon_audit`，旧顶层模块名不再提供。
+原始提示词、模型配置、输入签名规则及共享盘输出路径保持不变，已有结果可继续复用。
+历史 logs、冻结配置和恢复记录保留原文；旧外部启动脚本可能引用旧模块名，
+请使用下方的新模块命令启动，不要直接重放历史启动脚本。
+
+更新：2026-11-11。部署位置：1015，`/mnt/workspace/Subtask_Annotation _Review/annotatiuon_audit`。
 
 ## 1. 当前状态与用途
 
@@ -104,9 +109,9 @@ task优先取标准记录中的task，其次final中的task或instruction。输�
 
 ```bash
 cd '/mnt/workspace/Subtask_Annotation _Review'
-python -m unittest subtask_annotation_filter.test_pipeline -v
-python -m subtask_annotation_filter.run --help
-python -m subtask_annotation_filter.run --config subtask_annotation_filter/config.yaml --dry-run
+python -m unittest annotatiuon_audit.test_pipeline -v
+python -m annotatiuon_audit.run --help
+python -m annotatiuon_audit.run --config annotatiuon_audit/config.yaml --dry-run
 ```
 
 dry-run只读取和校验输入，**不读API凭据、不发请求、不写预测结果**。共享盘读取大量小JSON可能较慢，不要误认为已经在模型预测。
@@ -128,7 +133,7 @@ dry-run只读取和校验输入，**不读API凭据、不发请求、不写预�
 正式入口（当前已启用，运行会调用API，不要与后台同目录任务重复启动）：
 
 ```bash
-python -m subtask_annotation_filter.run --config subtask_annotation_filter/config.yaml
+python -m annotatiuon_audit.run --config annotatiuon_audit/config.yaml
 ```
 
 ## 7. 输出与进度

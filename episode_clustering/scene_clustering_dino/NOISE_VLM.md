@@ -1,6 +1,6 @@
 # DINO 未归类样本的 VLM 补充分组
 
-入口：`python -m scene_clustering_dino.refine_noise`。
+入口：`python -m episode_clustering.scene_clustering_dino.refine_noise`。
 只新增后处理，不改变 DINO/HDBSCAN 算法，也不重复提取 embedding。
 
 1. 读取已有 DINO 结果中各任务的 `clusters.json`。
@@ -13,7 +13,7 @@
 
 ## 配置与执行
 
-复用 `scene_clustering_vlm/config.yaml`，无需另一份配置：
+复用 `episode_clustering/scene_clustering_vlm/config.yaml`，无需另一份配置：
 
 - `frame_mode`：first / last / first_last，可独立于原DINO特征模式选择。
 - `episodes_per_batch`：默认50，为第一轮请求批大小，不是最终簇大小。
@@ -25,8 +25,8 @@
 必须使用新的独立输出目录。原DINO结果目录及其父子目录均不能作为输出，原文件不写回。
 
 ```bash
-cd /mnt/workspace/EmbeddingCluster_Exp
-python -m scene_clustering_dino.refine_noise \
+cd '/mnt/workspace/Subtask_Annotation _Review'
+python -m episode_clustering.scene_clustering_dino.refine_noise \
   --dino-result /path/to/last_cls_hdbscan_result \
   --output /path/to/new_hybrid_result \
   --vlm-config /path/to/config.yaml \

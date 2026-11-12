@@ -1,4 +1,4 @@
-"""Export completed anomaly candidates, at most two episodes per task."""
+"""Export completed anomaly candidates with an optional per-task limit."""
 import argparse
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
@@ -23,7 +23,11 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--standards", type=Path, required=True)
     parser.add_argument("--cache", type=Path, required=True)
+    parser.add_argument("--max-per-task", type=int, default=2, help="0 exports all anomalies")
+    parser.add_argument("--workers", type=int, default=4)
     args = parser.parse_args()
+    if args.max_per_task < 0 or args.workers < 1:
+        parser.error("max-per-task must be nonnegative and workers must be positive")
     args.output.mkdir(parents=True, exist_ok=True)
     standards = read(args.standards)["episodes"]
     anomalies = read(args.run / "anomalies.json")
@@ -31,7 +35,8 @@ def main():
     for review in sorted(anomalies, key=lambda x: x["episode_id"]):
         if review["review_status"] == "anomaly":
             grouped[standards[review["episode_id"]]["task_id"]].append(review)
-    selected = [r for task in sorted(grouped, key=lambda x: int(x)) for r in grouped[task][:2]]
+    selected = [r for task in sorted(grouped, key=lambda x: int(x))
+                for r in grouped[task][:args.max_per_task or None]]
     progress = read(args.run / "progress.json")
 
     def export(review):
@@ -79,11 +84,13 @@ def main():
                 "annotation": annotation, "review": review, "bounds": bounds,
                 "duration": duration, "video_info": info}
 
-    with ThreadPoolExecutor(max_workers=4) as pool:
+    with ThreadPoolExecutor(max_workers=args.workers) as pool:
         episodes = list(pool.map(export, selected))
     data = {"generated_at": datetime.now(timezone.utc).isoformat(), "source_run": str(args.run),
             "progress": progress, "anomaly_snapshot_count": len(anomalies),
-            "selection": "episode_id ascending; first two completed anomalies per task",
+            "max_per_task": args.max_per_task,
+            "selection": (f"episode_id ascending; first {args.max_per_task} anomalies per task"
+                          if args.max_per_task else "all completed anomaly candidates"),
             "task_count": len(grouped), "episodes": episodes}
     write(args.output / "selection.json", data)
     (args.output / "data.js").write_text("window.REVIEW_DATA=" + json.dumps(data, ensure_ascii=False) + ";\n", encoding="utf-8")
