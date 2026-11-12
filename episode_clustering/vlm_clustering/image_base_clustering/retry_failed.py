@@ -21,8 +21,8 @@ def main():
     root = args.root.resolve()
     if not args.worker:
         with (root / 'recovery.log').open('a') as log:
-            p = subprocess.Popen([sys.executable, '-u', '-m', 'episode_clustering.scene_clustering_vlm.retry_failed', str(root), '--worker'],
-                                 cwd=Path(__file__).resolve().parents[2], stdout=log, stderr=subprocess.STDOUT,
+            p = subprocess.Popen([sys.executable, '-u', '-m', 'episode_clustering.vlm_clustering.image_base_clustering.retry_failed', str(root), '--worker'],
+                                 cwd=Path(__file__).resolve().parents[3], stdout=log, stderr=subprocess.STDOUT,
                                  start_new_session=True)
         save(root / 'recovery_launch.json', dict(pid=p.pid, started_at=time.time(), max_tokens=32768))
         print(json.dumps(dict(pid=p.pid, recovery_log=str(root/'recovery.log'))))

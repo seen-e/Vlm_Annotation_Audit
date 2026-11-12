@@ -8,8 +8,8 @@ import time
 
 import yaml
 
-from annotatiuon_audit.client import complete, credentials
-from annotatiuon_audit.data import read_json, save_json, signature
+from annotatiuon_audit.episode_level_filter.client import complete, credentials
+from annotatiuon_audit.episode_level_filter.data import read_json, save_json, signature
 from .prompts import PROMPT
 
 

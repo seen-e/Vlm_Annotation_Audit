@@ -14,7 +14,11 @@
 ## 数据流
 
 已有首尾帧缓存 → episode_clustering.scene_clustering_dino.embedding_extraction.fast → episode_clustering/scene_clustering_dino。
-已有首尾帧缓存 → episode_clustering/scene_clustering_vlm → review_standard/manual_review_standard → 每episode审核标准。
+已有首尾帧缓存 → episode_clustering/vlm_clustering/image_base_clustering → review_standard/manual_review_standard → 每episode审核标准。
+
+新增可选递进步骤：图像场景组 → vlm_clustering/txt_base_clustering 两轮文本结果分组。
+组内人数小于 text_clustering_min_group_size（默认3）时原样保留；不跨父场景组，
+不把聚类状态当作审核结论。入口及完整配置见 [VLM说明](episode_clustering/vlm_clustering/ReadMe.md)。
 原始任务指令及episode映射 → review_standard/vlm_review_standard → 每episode中文指令标准。
 每episode审核标准 + 最终subtask标注 → annotatiuon_audit（首轮实验已获用户授权，结果需人工复核）。
 

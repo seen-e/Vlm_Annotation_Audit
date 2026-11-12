@@ -5,7 +5,7 @@
 
 1. 读取已有 DINO 结果中各任务的 `clusters.json`。
 2. 只挑出 `cluster_id=-1` 的 episode；按原任务独立处理。
-3. 复用 `scene_clustering_vlm` 的两轮流程及原有两个提示词：默认每批50条，代表成员参与第二轮合并。最后不足50条也正常处理。
+3. 复用 `vlm_clustering/image_base_clustering` 的两轮流程及原有两个提示词：默认每批50条，代表成员参与第二轮合并。最后不足50条也正常处理。
 4. 不把 DINO 已归类成员传给 VLM；不向已有 DINO 簇归并、不做最近邻分配。
 5. 将 DINO 原组和 VLM 新组并列展示，使用不同前缀避免组编号冲突。
 
@@ -13,7 +13,7 @@
 
 ## 配置与执行
 
-复用 `episode_clustering/scene_clustering_vlm/config.yaml`，无需另一份配置：
+复用 `episode_clustering/vlm_clustering/image_base_clustering/config.yaml`，无需另一份配置：
 
 - `frame_mode`：first / last / first_last，可独立于原DINO特征模式选择。
 - `episodes_per_batch`：默认50，为第一轮请求批大小，不是最终簇大小。

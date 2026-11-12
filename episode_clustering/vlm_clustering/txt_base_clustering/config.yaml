@@ -1,0 +1,25 @@
+# All relative paths resolve against this config file.
+image_results_root: /mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/first_last_batch50_xb4v_full3500_20261111_155511 # Completed image-stage groups.
+annotations_root: /mnt/data/chachaxu/dataset/robodojo/robodojo_merged_stage1to4_20261106 # Final episode annotation texts; no image/video input.
+annotation_pattern: "{episode_id}/final.json" # Exact annotation version; no automatic fallback.
+output_root: /mnt/data/chachaxu/embedding_cluster/robodojo_vlm_experiments/text_within_scene_v1 # Separate output; never overwrites image results.
+text_clustering_min_group_size: 3 # Strictly smaller groups bypass text clustering and retain every member.
+episodes_per_batch: 20 # Round-one batch size within a single scene group.
+representatives_per_cluster: 3 # Representative count min(value, member count).
+group_workers: 16 # Concurrent scene groups; rounds inside each group run sequentially.
+input_workers: 32 # Concurrent annotation reads during preflight, before any API request.
+shuffle_seed: 42 # Deterministic batching within each parent group.
+max_request_chars: 500000 # Hard cap on serialized payload; fail rather than truncate or add rounds.
+task_ids: [] # Empty selects all tasks; no cross-task or cross-scene merging.
+api:
+  credentials_file: ../../../.credentials/xb4v.yaml # Framework-root credentials; excluded from snapshots.
+  base_url_env: VLM_CLUSTER_BASE_URL # Used only when credentials_file is null.
+  api_key_env: VLM_CLUSTER_API_KEY # Never saved to request artifacts.
+  model_env: VLM_CLUSTER_MODEL # Explicit model required.
+  thinking: true # Provider-specific thinking switch; null omits it.
+  temperature: 0 # Sampling temperature.
+  max_tokens: 16384 # Truncation is a request failure.
+  timeout_sec: 600 # Per-request timeout.
+  attempts: 3 # Retry count including invalid JSON/member coverage.
+  retry_delay_sec: 5 # Delay between retries.
+  stream: true # Collect full content before validation.

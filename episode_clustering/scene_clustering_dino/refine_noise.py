@@ -9,10 +9,10 @@ import time
 
 import yaml
 
-from ..scene_clustering_vlm.api import credentials, save, signature
-from ..scene_clustering_vlm.round1_prompt import PROMPT as ROUND1
-from ..scene_clustering_vlm.round2_prompt import PROMPT as ROUND2
-from ..scene_clustering_vlm.run import load_tasks, run_task, validate_config
+from ..vlm_clustering.image_base_clustering.api import credentials, save, signature
+from ..vlm_clustering.image_base_clustering.round1_prompt import PROMPT as ROUND1
+from ..vlm_clustering.image_base_clustering.round2_prompt import PROMPT as ROUND2
+from ..vlm_clustering.image_base_clustering.run import load_tasks, run_task, validate_config
 
 
 def read_dino(root):
@@ -146,7 +146,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--dino-result', type=Path, required=True)
     ap.add_argument('--output', type=Path, required=True)
-    ap.add_argument('--vlm-config', type=Path, default=Path(__file__).parents[1] / 'scene_clustering_vlm/config.yaml')
+    ap.add_argument('--vlm-config', type=Path, default=Path(__file__).parents[1] / 'vlm_clustering/image_base_clustering/config.yaml')
     ap.add_argument('--dry-run', action='store_true')
     args = ap.parse_args()
     started = time.time()

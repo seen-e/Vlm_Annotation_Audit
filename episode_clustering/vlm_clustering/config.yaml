@@ -1,0 +1,3 @@
+# Paths are relative to this configuration file.
+image_config: image_base_clustering/config.yaml
+text_config: txt_base_clustering/config.yaml

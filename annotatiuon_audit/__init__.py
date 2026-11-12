@@ -1,1 +1,1 @@
-"""Independent episode screening infrastructure; prompt pending joint review."""
+"""Episode-level and future group-level annotation auditing."""

@@ -17,7 +17,7 @@ def main():
     args = parser.parse_args()
     if args.task_workers < 1:
         raise ValueError('task_workers must be positive')
-    root = Path(__file__).resolve().parents[2]
+    root = Path(__file__).resolve().parents[3]
     source = args.credentials_source
     raw = yaml.safe_load(source.read_text(encoding='utf-8'))
     matches = []
@@ -55,7 +55,7 @@ def main():
     cfg['api']['credentials_file'] = str(credentials)
     path = out / 'run_config.yaml'
     path.write_text(yaml.safe_dump(cfg, allow_unicode=True, sort_keys=False), encoding='utf-8')
-    command = [sys.executable, '-u', '-m', 'episode_clustering.scene_clustering_vlm.run', '--config', str(path)]
+    command = [sys.executable, '-u', '-m', 'episode_clustering.vlm_clustering.image_base_clustering.run', '--config', str(path)]
     # The runner validates all metadata and saves the full plan before API requests.
     if not args.all_tasks:
         subprocess.run(command + ['--dry-run'], cwd=root, check=True)

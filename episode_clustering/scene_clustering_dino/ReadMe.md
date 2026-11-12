@@ -22,7 +22,7 @@
 | test_refine_noise.py | DINO/VLM并列合并和覆盖测试 |
 | NOISE_VLM.md | 历史补充分组设计说明，运行路径以本文件为准 |
 
-依赖：Python、NumPy、Pillow、PyArrow、提供 `sklearn.cluster.HDBSCAN` 的 scikit-learn（1.3及以上）。补充分组还依赖 `scene_clustering_vlm`、PyYAML、OpenAI SDK。普通聚类无需GPU。
+依赖：Python、NumPy、Pillow、PyArrow、提供 `sklearn.cluster.HDBSCAN` 的 scikit-learn（1.3及以上）。补充分组还依赖 `vlm_clustering/image_base_clustering`、PyYAML、OpenAI SDK。普通聚类无需GPU。
 
 ## 3. 输入约束
 
@@ -94,14 +94,14 @@ Medoid为簇内平均余弦相似度最高成员；中心最多8条，边缘最�
 
 ## 7. 对未归类成员做VLM补充分组
 
-复用 `episode_clustering/scene_clustering_vlm/config.yaml` 的图像模式、每批数量、代表数、task_workers和API配置；输出由此入口的 `--output` 决定。
+复用 `episode_clustering/vlm_clustering/image_base_clustering/config.yaml` 的图像模式、每批数量、代表数、task_workers和API配置；输出由此入口的 `--output` 决定。
 
 ```bash
 cd '/mnt/workspace/Subtask_Annotation _Review'
 python -m episode_clustering.scene_clustering_dino.refine_noise \
   --dino-result /mnt/data/chachaxu/embedding_cluster/robodojo_experiments/last_cls_hdbscan_20261111_v1 \
   --output /mnt/data/chachaxu/embedding_cluster/robodojo_experiments/NEW_HYBRID_RUN \
-  --vlm-config episode_clustering/scene_clustering_vlm/config.yaml --dry-run
+  --vlm-config episode_clustering/vlm_clustering/image_base_clustering/config.yaml --dry-run
 ```
 
 检查dry_run_plan后去掉dry-run才调用API。没有未归类成员时不会读取凭据或发请求。输出不能等于原DINO目录或与之构成父子目录。

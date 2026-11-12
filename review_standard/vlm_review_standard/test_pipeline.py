@@ -4,7 +4,7 @@ import tempfile
 import unittest
 
 from .run import build_jobs, map_episodes, run_jobs, validate
-from annotatiuon_audit.data import prepare, save_json
+from annotatiuon_audit.episode_level_filter.data import prepare, save_json
 
 
 class TranslationTests(unittest.TestCase):

@@ -7,7 +7,7 @@ episode_ids: [] # Empty means every episode present in the standards file.
 episode_batchsize: 48 # Concurrent episodes; one complete episode per request.
 input_workers: 32 # Parallel read-only preflight; all inputs must validate before API calls.
 model:
-  credentials_file: ../.credentials/xb4v.yaml # Existing xb4v credentials; key never copied to results.
+  credentials_file: ../../.credentials/xb4v.yaml # Framework-root xb4v credentials; key never copied to results.
   base_url: null # Explicit value overrides credentials file; otherwise use base_url_env.
   base_url_env: ANOMALY_BASE_URL
   api_key_env: ANOMALY_API_KEY # API key is loaded from env or credentials_file, not stored here.

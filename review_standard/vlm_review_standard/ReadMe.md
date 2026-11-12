@@ -18,7 +18,7 @@ episode，生成现有 `annotatiuon_audit` 可读取的标准文件。
 - `test_pipeline.py`：离线模拟 API 测试，不产生模型费用。
 - `requirements.txt`：依赖。
 
-复用框架已有的 `annotatiuon_audit.client` 和 `data` 中的 API、凭据、
+复用框架已有的 `annotatiuon_audit.episode_level_filter.client` 和 `data` 中的 API、凭据、
 JSON 原子写入与签名函数；不调用异常审核流程，不修改其配置和提示词。
 应保留完整框架目录运行，不要只复制本模块。
 

@@ -36,7 +36,7 @@ python -m unittest review_standard.vlm_review_standard.test_pipeline -v
 ## 接入筛查
 
 两种输出都提供 `episodes[episode_id].review_standard`。选择所需文件作为
-`annotatiuon_audit/config.yaml` 的 `standards_path`，并为新实验设置独立
+`annotatiuon_audit/episode_level_filter/config.yaml` 的 `standards_path`，并为新实验设置独立
 `output_root`。本次目录调整不改变当前筛查配置、人工标准或任何模型预测结果。
 
 原根目录的两个模块已迁入此目录，旧模块命令及页面路径不再有效。
