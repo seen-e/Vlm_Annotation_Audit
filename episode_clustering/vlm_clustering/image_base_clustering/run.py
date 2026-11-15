@@ -93,7 +93,7 @@ def run_task(tid,items,cfg,root,auth,caller=request):
                 assignments.append(dict(episode_id=eid,task_id=tid,round1_group_id=gid,cluster_id=cluster_id,status=g['status']))
     assigned=[a['episode_id'] for a in assignments]
     if len(set(assigned))!=len(items) or set(assigned)!=set(lookup):raise ValueError('Final coverage mismatch')
-    output=dict(task_id=tid,task=items[0]['task'],frame_mode=cfg['frame_mode'],episode_count=len(items),
+    output=dict(clustering_mode='scene_only',task_id=tid,task=items[0]['task'],frame_mode=cfg['frame_mode'],episode_count=len(items),
                 round1_group_count=len(candidates),final_group_count=len(final),groups=final,assignments=assignments)
     save(folder/'final.json',output);return output
 
@@ -140,7 +140,7 @@ def main():
             save(root/'progress.json',dict(total_tasks=len(tasks),completed_tasks=len(done),failed_tasks=len(failures),elapsed_sec=time.time()-started))
     done.sort(key=lambda t:t['task_id'])
     save(root/'assignments.json',[a for t in done for a in t['assignments']]);save(root/'failures.json',failures)
-    summary=dict(status='complete_with_failures' if failures else 'complete',tasks=len(tasks),completed_tasks=len(done),failed_tasks=len(failures),
+    summary=dict(status='complete_with_failures' if failures else 'complete',clustering_mode='scene_only',tasks=len(tasks),completed_tasks=len(done),failed_tasks=len(failures),
                  episodes=sum(t['episode_count'] for t in done),groups=sum(t['final_group_count'] for t in done),elapsed_sec=time.time()-started)
     save(root/'summary.json',summary);print(json.dumps(summary))
     if failures:raise SystemExit(1)

@@ -21,8 +21,10 @@ def safe_id(value):
 def load_config(path):
     path = Path(path).resolve()
     cfg = yaml.safe_load(path.read_text(encoding='utf-8'))
-    for key in ('image_results_root', 'annotations_root', 'output_root'):
-        cfg[key] = str((path.parent / cfg[key]).resolve())
+    cfg.setdefault('input_mode', 'scene_groups')
+    for key in ('image_results_root', 'dataset_root', 'episode_manifest', 'annotations_root', 'output_root'):
+        if cfg.get(key):
+            cfg[key] = str((path.parent / cfg[key]).resolve())
     if cfg['api'].get('credentials_file'):
         cfg['api']['credentials_file'] = str((path.parent / cfg['api']['credentials_file']).resolve())
     validate_config(cfg)
@@ -30,6 +32,12 @@ def load_config(path):
 
 
 def validate_config(cfg):
+    if cfg.get('input_mode', 'scene_groups') not in ('scene_groups', 'task_scope'):
+        raise ValueError('input_mode must be scene_groups or task_scope')
+    required = ('image_results_root',) if cfg.get('input_mode', 'scene_groups') == 'scene_groups' else ('dataset_root', 'episode_manifest')
+    for key in required:
+        if not cfg.get(key):
+            raise ValueError(key + ' is required for input_mode=' + cfg.get('input_mode', 'scene_groups'))
     for key in ('text_clustering_min_group_size', 'episodes_per_batch', 'representatives_per_cluster',
                 'group_workers', 'input_workers', 'max_request_chars'):
         if type(cfg[key]) is not int or cfg[key] < 1:
@@ -48,7 +56,9 @@ def validate_config(cfg):
     if api['timeout_sec'] <= 0 or api['retry_delay_sec'] < 0 or type(api['stream']) is not bool:
         raise ValueError('Invalid timeout, retry delay or stream')
     out = Path(cfg['output_root']).resolve()
-    for key in ('image_results_root', 'annotations_root'):
+    for key in ('image_results_root', 'dataset_root', 'episode_manifest', 'annotations_root'):
+        if not cfg.get(key):
+            continue
         src = Path(cfg[key]).resolve()
         if src == out or src.is_relative_to(out) or out.is_relative_to(src):
             raise ValueError('Text output must be separate from both input roots')
@@ -90,8 +100,7 @@ def annotation_text(path, eid):
     return {'episode_id': eid, 'annotation': {'terminal_summary': terminal, 'subtasks': records}}, hashlib.sha256(raw).hexdigest()
 
 
-def prepare(cfg):
-    validate_config(cfg)
+def _scene_group_jobs(cfg):
     root = Path(cfg['image_results_root'])
     summary = read(root / 'summary.json')
     if summary.get('status') != 'complete' or summary.get('failed_tasks', 0):
@@ -136,8 +145,11 @@ def prepare(cfg):
                 continue
             shuffled = sorted(ids)
             random.Random(f'{cfg["shuffle_seed"]}:{tid}:{gid}').shuffle(shuffled)
-            jobs.append({'task_id': tid, 'task': task['task'], 'parent_scene_group_id': gid,
-                         'parent_scene_status': group['status'],
+            jobs.append({'task_id': tid, 'task': task['task'], 'parent_group_id': gid,
+                         'parent_group_source': 'scene_clustering',
+                         'parent_group_status': group['status'],
+                         'parent_group_description': group.get('common_features', ''),
+                         'parent_scene_group_id': gid, 'parent_scene_status': group['status'],
                          'parent_scene_description': group.get('common_features', ''),
                          'image_final_path': str(path), 'image_final_sha256': hashlib.sha256(raw).hexdigest(),
                          'episode_ids': shuffled, 'episodes': [], 'annotation_sources': [],
@@ -153,6 +165,70 @@ def prepare(cfg):
         raise ValueError('Image summary counts disagree')
     if selected - seen_tasks or not jobs:
         raise ValueError('Requested tasks not found')
+    return jobs
+
+
+def _task_membership(cfg):
+    """Load task-scoped episode membership without reading scene-clustering outputs."""
+    import pyarrow.parquet as pq
+
+    task_path = Path(cfg['dataset_root']) / 'meta/tasks.parquet'
+    manifest_path = Path(cfg['episode_manifest'])
+    table = pq.read_table(task_path).to_pylist()
+    mapping = {row['__index_level_0__']: int(row['task_index']) for row in table}
+    if len(mapping) != len(table):
+        raise ValueError('Duplicate task mapping')
+    rows = read(manifest_path)
+    if not isinstance(rows, list):
+        raise ValueError('episode_manifest must contain a JSON list')
+    selected = set(cfg['task_ids'])
+    grouped, seen = {}, set()
+    for row in rows:
+        eid = safe_id(row.get('episode_id'))
+        tasks = row.get('tasks')
+        if eid in seen:
+            raise ValueError('Duplicate episode in manifest: ' + eid)
+        seen.add(eid)
+        if not isinstance(tasks, list) or len(tasks) != 1 or tasks[0] not in mapping:
+            raise ValueError('Ambiguous task mapping: ' + eid)
+        tid = mapping[tasks[0]]
+        if selected and tid not in selected:
+            continue
+        entry = grouped.setdefault(tid, {'task': tasks[0], 'episode_ids': []})
+        if entry['task'] != tasks[0]:
+            raise ValueError('Conflicting task text for task_id=' + str(tid))
+        entry['episode_ids'].append(eid)
+    if selected - set(grouped) or not grouped:
+        raise ValueError('Requested tasks not found')
+    source = {
+        'task_mapping_path': str(task_path),
+        'task_mapping_sha256': hashlib.sha256(task_path.read_bytes()).hexdigest(),
+        'episode_manifest_path': str(manifest_path),
+        'episode_manifest_sha256': hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
+    }
+    return grouped, source
+
+
+def _task_scope_jobs(cfg):
+    grouped, source = _task_membership(cfg)
+    jobs = []
+    for tid, record in sorted(grouped.items()):
+        gid = f't{tid:03d}_all'
+        ids = sorted(record['episode_ids'])
+        random.Random(f'{cfg["shuffle_seed"]}:{tid}:{gid}').shuffle(ids)
+        jobs.append({'task_id': tid, 'task': record['task'], 'parent_group_id': gid,
+                     'parent_group_source': 'task', 'parent_group_status': 'task_scope',
+                     'parent_group_description': '同一任务内全部已选episode',
+                     'parent_scene_group_id': None, 'parent_scene_status': None,
+                     'parent_scene_description': None, **source,
+                     'episode_ids': ids, 'episodes': [], 'annotation_sources': [],
+                     'skip': len(ids) < cfg['text_clustering_min_group_size']})
+    return jobs
+
+
+def prepare(cfg):
+    validate_config(cfg)
+    jobs = _scene_group_jobs(cfg) if cfg.get('input_mode', 'scene_groups') == 'scene_groups' else _task_scope_jobs(cfg)
     annotation_root = Path(cfg['annotations_root']).resolve()
 
     def load(eid):

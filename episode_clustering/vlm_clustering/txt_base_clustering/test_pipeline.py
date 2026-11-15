@@ -9,6 +9,7 @@ import yaml
 
 from ..image_base_clustering.api import request, save
 from ..run import commands
+from . import data as data_module
 from .data import prepare
 from .run import preflight_plan, run_group, run_jobs
 from .schema import validate_round1, validate_round2
@@ -88,6 +89,36 @@ class PipelineTests(unittest.TestCase):
             self.assertTrue(all(set(e['annotation']) == {'terminal_summary', 'subtasks'} for e in episodes))
         groups = json.loads((self.root / 'output/final.json').read_text())['scene_groups']
         self.assertTrue(all(set(g['representative_episode_ids']) <= set(g['member_episode_ids']) for r in groups for g in r['groups']))
+
+    def test_text_only_uses_task_scope_without_scene_groups(self):
+        for tid in (0, 1):
+            for eid in (f'ep_{tid}_0_0', f'ep_{tid}_0_1'):
+                save(self.root / 'annotations' / eid / 'final.json',
+                     {'terminal_summary': 'object in box',
+                      'subtasks': [{'segment_summary': 'Move object into box'}]})
+        cfg = copy.deepcopy(self.cfg)
+        cfg.update(input_mode='task_scope', dataset_root=str(self.root / 'dataset'),
+                   episode_manifest=str(self.root / 'selection.json'), output_root=str(self.root / 'text-only'))
+        grouped = {
+            tid: {'task': 'put object in box',
+                  'episode_ids': [f'ep_{tid}_{group}_{index}' for group, size in enumerate((2, 3)) for index in range(size)]}
+            for tid in (0, 1)
+        }
+        source = {'task_mapping_path': 'tasks.parquet', 'task_mapping_sha256': 'task-hash',
+                  'episode_manifest_path': 'selection.json', 'episode_manifest_sha256': 'manifest-hash'}
+        with patch.object(data_module, '_task_membership', return_value=(grouped, source)):
+            jobs = prepare(cfg)
+        self.assertEqual(len(jobs), 2)
+        self.assertTrue(all(j['parent_group_source'] == 'task' for j in jobs))
+        self.assertTrue(all(j['parent_scene_group_id'] is None for j in jobs))
+        summary = run_jobs(jobs, cfg, self.auth, self.caller)
+        self.assertEqual(summary['clustering_mode'], 'text_only')
+        output = json.loads((self.root / 'text-only/final.json').read_text())
+        self.assertIn('task_groups', output)
+        self.assertNotIn('scene_groups', output)
+        for payload in self.calls:
+            self.assertEqual(payload['parent_group_source'], 'task')
+            self.assertIsNone(payload['parent_scene_group_id'])
 
     def test_real_request_cache_and_text_only_transport(self):
         calls = []
@@ -194,7 +225,14 @@ class PipelineTests(unittest.TestCase):
         result = commands(self.root / 'pipeline.yaml', 'all')
         self.assertEqual(len(result), 2)
         self.assertEqual(result[1][-2:], ['--image-results-root', str(self.root / 'new-image-results')])
-        self.assertNotIn('--image-results-root', commands(self.root / 'pipeline.yaml', 'text')[0])
+        legacy_text = commands(self.root / 'pipeline.yaml', 'text')[0]
+        self.assertNotIn('--image-results-root', legacy_text)
+        self.assertEqual(legacy_text[legacy_text.index('--input-mode') + 1], 'scene_groups')
+        self.assertEqual(len(commands(self.root / 'pipeline.yaml', 'scene_only')), 1)
+        text = commands(self.root / 'pipeline.yaml', 'text_only')[0]
+        self.assertEqual(text[text.index('--input-mode') + 1], 'task_scope')
+        progressive = commands(self.root / 'pipeline.yaml', 'scene_then_text')[1]
+        self.assertEqual(progressive[progressive.index('--input-mode') + 1], 'scene_groups')
 
     def test_wrapper_stops_after_image_failure(self):
         from ..run import main

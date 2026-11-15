@@ -1,8 +1,8 @@
 PROMPT = '''你是机器人 episode 最终结果文本的分组员，执行第一轮批内分组。
-输入全部来自同一任务、同一个图像场景组。只按标注文本描述的最终实现结果划分，不审核任务是否成功，不判断标注是否正确，不查看图像。
+输入全部来自同一任务、同一个父输入组。只按标注文本描述的最终实现结果划分，不审核任务是否成功，不判断标注是否正确，不查看图像。
 
 【输入】
-task 是原始任务背景，不是实际结果；parent_scene_group_id 是必须保留的父场景边界。
+task 是原始任务背景，不是实际结果。parent_group_id 是必须保留的父组边界；parent_group_source=scene_clustering 表示父组来自图像场景聚类，parent_group_source=task 表示父组是同一任务的全部已选episode，不能据此推断它们视觉场景相同。
 episodes 中每项包含 episode_id 和 annotation。annotation.terminal_summary 是原标注的最终状态描述；subtasks 按原顺序提供阶段摘要、机械臂描述及 uncertainty。
 这些字段都属于待理解的模型标注，不是独立视觉证据。先通读完整过程和后续调整，再理解最终结果；不能只看局部步骤，也不能无条件相信完成声明。
 

@@ -16,6 +16,8 @@ def batches(job, cfg):
     size = cfg['episodes_per_batch']
     for index, start in enumerate(range(0, len(job['episodes']), size)):
         yield index, {'round': 1, 'task_id': job['task_id'], 'task': job['task'],
+                      'parent_group_id': job['parent_group_id'],
+                      'parent_group_source': job['parent_group_source'],
                       'parent_scene_group_id': job['parent_scene_group_id'],
                       'representatives_per_cluster': cfg['representatives_per_cluster'],
                       'episodes': job['episodes'][start:start + size]}
@@ -47,13 +49,18 @@ def zip_longest_representatives(candidates, refs):
 
 
 def run_group(job, cfg, root, auth, caller=request):
-    parent = job['parent_scene_group_id']
-    folder = Path(root) / f'task_{job["task_id"]:03d}' / 'scene_groups' / parent
+    parent = job['parent_group_id']
+    section = 'scene_groups' if job['parent_group_source'] == 'scene_clustering' else 'task_groups'
+    folder = Path(root) / f'task_{job["task_id"]:03d}' / section / parent
     reps = cfg['representatives_per_cluster']
-    base = {key: job[key] for key in ('task_id', 'task', 'parent_scene_group_id', 'parent_scene_status', 'parent_scene_description')}
+    base = {key: job[key] for key in ('task_id', 'task', 'parent_group_id', 'parent_group_source',
+                                      'parent_group_status', 'parent_group_description',
+                                      'parent_scene_group_id', 'parent_scene_status', 'parent_scene_description')}
     groups = []
     if job['skip']:
-        groups = [{'cluster_id': parent, 'parent_scene_group_id': parent,
+        groups = [{'cluster_id': parent, 'parent_group_id': parent,
+                   'parent_group_source': job['parent_group_source'],
+                   'parent_scene_group_id': job['parent_scene_group_id'],
                    'status': 'skipped_small_group', 'text_status': 'not_evaluated',
                    'member_episode_ids': sorted(job['episode_ids']), 'common_result': None,
                    'reason': 'Group size is below text_clustering_min_group_size',
@@ -80,7 +87,9 @@ def run_group(job, cfg, root, auth, caller=request):
             descriptions[-1].update(member_count=len(group['member_episode_ids']),
                                     representative_episodes=[lookup[eid] for eid in group['representative_episode_ids']])
         payload = {'round': 2, 'task_id': job['task_id'], 'task': job['task'],
-                   'parent_scene_group_id': parent, 'candidate_groups': descriptions}
+                   'parent_group_id': parent, 'parent_group_source': job['parent_group_source'],
+                   'parent_scene_group_id': job['parent_scene_group_id'],
+                   'candidate_groups': descriptions}
         check_size(payload, cfg)
         result = caller(folder / 'round2', ROUND2, payload, [], call_cfg, auth,
                         lambda obj: validate_round2(obj, by_id))
@@ -88,7 +97,9 @@ def run_group(job, cfg, root, auth, caller=request):
         for index, group in enumerate(result['groups']):
             refs = group['source_group_ids']
             ids = [eid for gid in refs for eid in by_id[gid]['member_episode_ids']]
-            groups.append(dict(group, cluster_id=f'{parent}_txt{index:03d}', parent_scene_group_id=parent,
+            groups.append(dict(group, cluster_id=f'{parent}_txt{index:03d}', parent_group_id=parent,
+                               parent_group_source=job['parent_group_source'],
+                               parent_scene_group_id=job['parent_scene_group_id'],
                                member_episode_ids=ids,
                                representative_episode_ids=select_representatives(by_id, refs, min(reps, len(ids))),
                                representative_selection='round_robin_round1_representatives', text_status='clustered'))
@@ -107,8 +118,12 @@ def preflight_plan(jobs, cfg):
     rows = []
     for job in jobs:
         sizes = [check_size(payload, cfg) for _, payload in batches(job, cfg)] if not job['skip'] else []
-        rows.append({key: job[key] for key in ('task_id', 'parent_scene_group_id', 'parent_scene_status',
-                                              'episode_ids', 'image_final_sha256', 'annotation_sources', 'skip')})
+        keys = ('task_id', 'parent_group_id', 'parent_group_source', 'parent_group_status',
+                'parent_scene_group_id', 'episode_ids', 'annotation_sources', 'skip')
+        rows.append({key: job[key] for key in keys})
+        for key in ('image_final_sha256', 'task_mapping_sha256', 'episode_manifest_sha256'):
+            if key in job:
+                rows[-1][key] = job[key]
         rows[-1].update(round1_requests=len(sizes), round2_requests=0 if job['skip'] else 1,
                         round1_payload_chars=sizes)
     return rows
@@ -165,30 +180,39 @@ def run_jobs(jobs, cfg, auth, caller=request):
                     error = str(exc)
                     if auth.get('api_key'):
                         error = error.replace(auth['api_key'], '[REDACTED]')
-                    failures.append({'task_id': job['task_id'], 'parent_scene_group_id': job['parent_scene_group_id'], 'error': error})
+                    failures.append({'task_id': job['task_id'], 'parent_group_id': job['parent_group_id'],
+                                     'parent_group_source': job['parent_group_source'],
+                                     'parent_scene_group_id': job['parent_scene_group_id'], 'error': error})
                 report()
-        results.sort(key=lambda r: (r['task_id'], r['parent_scene_group_id']))
+        results.sort(key=lambda r: (r['task_id'], r['parent_group_id']))
         assignments, samples = [], []
         for result in results:
             for group in result['groups']:
                 for eid in group['member_episode_ids']:
                     assignments.append({'episode_id': eid, 'task_id': result['task_id'],
+                                        'parent_group_id': result['parent_group_id'],
+                                        'parent_group_source': result['parent_group_source'],
                                         'parent_scene_group_id': result['parent_scene_group_id'],
                                         'cluster_id': group['cluster_id'], 'status': group['status'],
                                         'audit_status': 'not_reviewed'})
-                samples.append({'task_id': result['task_id'], 'parent_scene_group_id': result['parent_scene_group_id'],
+                samples.append({'task_id': result['task_id'], 'parent_group_id': result['parent_group_id'],
+                                'parent_group_source': result['parent_group_source'],
+                                'parent_scene_group_id': result['parent_scene_group_id'],
                                 'cluster_id': group['cluster_id'], 'episode_ids': group['representative_episode_ids'],
                                 'selection': group['representative_selection'], 'audit_status': 'not_reviewed'})
         if len(assignments) != len({a['episode_id'] for a in assignments}):
             raise ValueError('Duplicate episode across final groups')
-        summary = {'status': 'complete_with_failures' if failures else 'complete',
+        mode = 'scene_then_text' if cfg.get('input_mode', 'scene_groups') == 'scene_groups' else 'text_only'
+        summary = {'status': 'complete_with_failures' if failures else 'complete', 'clustering_mode': mode,
                    'parent_groups': len(jobs), 'completed_parent_groups': len(results),
                    'failed_parent_groups': len(failures), 'groups': sum(len(r['groups']) for r in results),
                    'episodes': len(assignments), 'expected_episodes': sum(len(j['episode_ids']) for j in jobs),
                    'skipped_small_groups': sum(r['status'] == 'skipped_small_group' for r in results)}
         if not failures and summary['episodes'] != summary['expected_episodes']:
             raise ValueError('Missing episodes in complete run')
-        save(root / 'final.json', {'summary': summary, 'scene_groups': results})
+        final = {'summary': summary, 'clustering_mode': mode, 'parent_groups': results}
+        final['scene_groups' if mode == 'scene_then_text' else 'task_groups'] = results
+        save(root / 'final.json', final)
         save(root / 'assignments.json', assignments)
         save(root / 'representative_samples.json', samples)
         save(root / 'summary.json', summary)
@@ -201,18 +225,24 @@ def run_jobs(jobs, cfg, auth, caller=request):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', default=str(Path(__file__).with_name('config.yaml')))
+    parser.add_argument('--input-mode', choices=('scene_groups', 'task_scope'))
     parser.add_argument('--image-results-root')
+    parser.add_argument('--dataset-root')
+    parser.add_argument('--episode-manifest')
     parser.add_argument('--output-root')
     parser.add_argument('--dry-run', action='store_true', help='Read/validate all inputs and report plan; no API or result writes')
     args = parser.parse_args()
     cfg = load_config(args.config)
-    for key in ('image_results_root', 'output_root'):
+    if args.input_mode:
+        cfg['input_mode'] = args.input_mode
+    for key in ('image_results_root', 'dataset_root', 'episode_manifest', 'output_root'):
         if getattr(args, key):
             cfg[key] = str(Path(getattr(args, key)).resolve())
     jobs = prepare(cfg)
     plan = preflight_plan(jobs, cfg)
     if args.dry_run:
-        print(json.dumps({'tasks': len({j['task_id'] for j in jobs}), 'parent_scene_groups': len(jobs),
+        print(json.dumps({'input_mode': cfg.get('input_mode', 'scene_groups'),
+                          'tasks': len({j['task_id'] for j in jobs}), 'parent_groups': len(jobs),
                           'episodes': sum(len(j['episode_ids']) for j in jobs),
                           'threshold': cfg['text_clustering_min_group_size'],
                           'skipped_small_groups': sum(j['skip'] for j in jobs),
