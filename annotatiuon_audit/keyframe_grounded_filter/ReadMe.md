@@ -61,3 +61,10 @@ python -m annotatiuon_audit.keyframe_grounded_filter.run
 
 图片二进制不会写进 `input.json` 或 `messages_manifest.json`；输出保存来源路径、发送
 顺序及 SHA256，API 请求时再读取并核验图片未发生变化。
+
+## 自适应二轮方案
+
+`two_round/` 提供与本模块并列的低成本入口。第一轮只发送每段起止帧和最多一张
+代表性过程帧，定位有具体视觉线索的疑点；第二轮仅为目标 subtask 扩展全部证据帧，
+并保留相邻边界上下文。第一轮通过保存为 `screened_pass`，不会冒充完整审核后的
+`normal`。详细配置、输出目录和命令见 `two_round/ReadMe.md`。

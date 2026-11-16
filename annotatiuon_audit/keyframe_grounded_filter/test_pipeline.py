@@ -76,6 +76,9 @@ class KeyframeGroundedTests(unittest.TestCase):
         for index in range(1, len(content), 2):
             self.assertEqual(content[index]['type'], 'text')
             self.assertTrue(content[index]['text'].startswith('VISUAL_FRAME '))
+            label = json.loads(content[index]['text'].removeprefix('VISUAL_FRAME '))
+            self.assertIn('timestamp_sec', label)
+            self.assertIn('references', label)
             self.assertEqual(content[index + 1]['type'], 'image_url')
 
     def test_schema_separates_task_failure_from_annotation_error(self):

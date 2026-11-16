@@ -120,8 +120,10 @@ def image_source(root, cfg, episode_id, frame):
     mime = mimetypes.guess_type(path.name)[0]
     if mime not in ('image/jpeg', 'image/png', 'image/webp'):
         raise ValueError('Unsupported image type: ' + str(path))
-    return {'frame_ref': frame['frame_ref'], 'frame_index': frame['frame_index'], 'path': str(path),
-            'mime_type': mime, 'size': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
+    return {'frame_ref': frame['frame_ref'], 'frame_index': frame['frame_index'],
+            'timestamp_sec': frame.get('timestamp_sec'), 'references': frame.get('references', []),
+            'path': str(path), 'mime_type': mime, 'size': len(raw),
+            'sha256': hashlib.sha256(raw).hexdigest()}
 
 
 def prepare(cfg, on_progress=None):

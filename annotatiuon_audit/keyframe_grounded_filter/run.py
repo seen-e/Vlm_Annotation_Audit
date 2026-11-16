@@ -52,7 +52,8 @@ def call_config(cfg):
 
 
 def request_identity(job, prompt, cfg, auth):
-    images = [{key: image[key] for key in ('frame_ref', 'frame_index', 'mime_type', 'size', 'sha256')}
+    images = [{key: image[key] for key in ('frame_ref', 'frame_index', 'timestamp_sec', 'references',
+                                            'mime_type', 'size', 'sha256')}
               for image in job['images']]
     model_cfg = call_config(cfg)
     identity = {'prompt': prompt, 'payload': job['payload'], 'images': images,
@@ -85,7 +86,9 @@ def review_one(folder, job, prompt, cfg, auth, transport=complete):
         directory.mkdir(parents=True)
         manifest = {'system_prompt': prompt, 'payload': job['payload'],
                     'visual_sequence': [{'label_before_image': {'frame_ref': image['frame_ref'],
-                                                                'frame_index': image['frame_index']},
+                                                                'frame_index': image['frame_index'],
+                                                                'timestamp_sec': image.get('timestamp_sec'),
+                                                                'references': image.get('references', [])},
                                          'sha256': image['sha256'], 'mime_type': image['mime_type']}
                                         for image in job['images']]}
         if feedback:

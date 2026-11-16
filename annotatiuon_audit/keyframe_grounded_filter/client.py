@@ -9,7 +9,8 @@ from ..episode_level_filter.client import credentials
 def messages(prompt, payload, images, detail):
     content = [{'type': 'text', 'text': json.dumps(payload, ensure_ascii=False)}]
     for image in images:
-        label = {'frame_ref': image['frame_ref'], 'frame_index': image['frame_index']}
+        label = {'frame_ref': image['frame_ref'], 'frame_index': image['frame_index'],
+                 'timestamp_sec': image.get('timestamp_sec'), 'references': image.get('references', [])}
         content.append({'type': 'text', 'text': 'VISUAL_FRAME ' + json.dumps(label, ensure_ascii=False)})
         raw = Path(image['path']).read_bytes()
         if hashlib.sha256(raw).hexdigest() != image['sha256']:

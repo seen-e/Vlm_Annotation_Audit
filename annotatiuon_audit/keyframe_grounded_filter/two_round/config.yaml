@@ -1,0 +1,38 @@
+# Adaptive two-round audit. Paths are resolved relative to this file.
+standards_path: /mnt/data/chachaxu/dataset/robodojo/robodojo_review_standard.json # Per-episode effective standards.
+annotations_root: /mnt/data/chachaxu/dataset/robodojo/robodojo_merged_stage1to4_20261106 # Stage3 final annotations.
+annotation_pattern: "{episode_id}/final.json"
+keyframe_roots: # Each episode must occur under exactly one Stage4 root.
+  - /mnt/data/chachaxu/dataset/robodojo/subtask_original4_two_api_20261023/instance_1013
+  - /mnt/data/chachaxu/dataset/robodojo/subtask_original4_two_api_20261023/instance_1015
+keyframe_pattern: "{episode_id}/keyframes.json"
+sample_manifest_pattern: "{episode_id}/sample_manifest.json"
+frame_pattern: "{episode_id}/stage4_keyframes/frames/{frame_index:08d}.jpg"
+output_root: /mnt/data/chachaxu/dataset/robodojo/keyframe_grounded_audit_runs/two_round_v1 # Always use a new root for a new experiment.
+episode_ids: [] # Empty selects every episode; use an explicit list with --pilot while prompts are drafts.
+pilot_max_episodes: 20 # Maximum explicit pilot size allowed by --pilot.
+episode_batchsize: 8 # Concurrent episodes; round2 starts after that episode finishes round1.
+input_workers: 32 # Read-only JSON/image preflight workers.
+max_images_per_episode: 80 # Hard cap for the complete Stage4 evidence pool.
+max_image_bytes: 3000000 # Per-image source byte cap.
+max_text_chars: 600000 # Serialized full payload cap.
+image_detail: high # auto, low or high.
+round1:
+  max_images_per_episode: 32 # Start/end plus at most one representative process frame per subtask.
+round2:
+  max_images_per_episode: 80 # Compact set plus all target-subtask evidence and neighbor boundaries.
+  include_neighbor_boundaries: true # Add only start/end frames from adjacent subtasks.
+model:
+  credentials_file: ../../../.credentials/xb4v.yaml
+  base_url: null
+  base_url_env: KEYFRAME_AUDIT_BASE_URL
+  api_key_env: KEYFRAME_AUDIT_API_KEY
+  name: null
+  model_env: KEYFRAME_AUDIT_MODEL
+  thinking: true
+  temperature: 0
+  max_tokens: 16384
+  stream: true
+  timeout_sec: 900
+  attempts: 3
+  retry_delay_sec: 5
