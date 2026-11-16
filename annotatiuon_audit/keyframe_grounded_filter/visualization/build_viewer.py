@@ -16,23 +16,24 @@ aside{background:#fff;border-right:1px solid #d9dee5;display:flex;flex-direction
 main{overflow:auto;padding:20px 24px}.header{max-width:1400px;margin:auto}.header h2{margin:0 0 8px}.summary{background:#fff;border:1px solid #dce1e6;padding:16px;margin:14px 0}.summary p{margin:8px 0;line-height:1.55}.status-row{display:flex;gap:8px;flex-wrap:wrap}.status-row span{padding:5px 8px;font-size:12px;font-weight:700}.issues{border-left:4px solid #c23b31;background:#fff;padding:12px 16px;margin:12px 0}.issues h3{margin:0 0 8px;font-size:15px}.issue{border-top:1px solid #e5e8eb;padding:10px 0}.tabs{display:flex;gap:6px;overflow:auto;margin:16px 0;padding-bottom:4px}.panel{background:#fff;border:1px solid #dce1e6;padding:16px;margin-bottom:18px}.grid{display:grid;grid-template-columns:minmax(300px,.8fr) minmax(420px,1.2fr);gap:16px}.block{border:1px solid #e0e4e8;padding:12px}.block h3{font-size:14px;margin:0 0 10px}.block p{white-space:pre-wrap;line-height:1.55;margin:7px 0}.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}.frame{border:1px solid #dce1e6;background:#fafafa}.frame img{width:100%;display:block;aspect-ratio:4/3;object-fit:contain;background:#111}.cap{padding:8px;font-size:12px;line-height:1.45}.cap strong{display:block;margin-bottom:3px}.muted{color:#66717c}.evidence{border-left:3px solid #3f6f92;padding-left:9px;margin:8px 0}@media(max-width:900px){.app{grid-template-columns:230px 1fr}.grid{grid-template-columns:1fr}}
 </style></head><body><div class="app"><aside><div class="side-head"><h1>拼写任务图文筛查</h1><div class="stats" id="stats"></div><div class="filters" id="filters"></div></div><div class="list" id="list"></div></aside><main><div class="header" id="content"></div></main></div><script src="data.js"></script><script>
 const D=window.AUDIT_DATA;let filter='all',selected=D.episodes[0]?.episode_id,sub=0;
-const labels={all:'全部',screened_pass:'第一轮通过',normal:'二轮正常',annotation_anomaly:'标注异常',task_not_met:'任务未满足',uncertain:'不确定',consistent:'图文一致',inconsistent:'图文不一致',met:'标准满足',not_met:'标准未满足',compact_only:'仅紧凑筛查'};
+const labels={all:'全部',normal:'正常',annotation_anomaly:'标注异常',task_not_met:'任务未满足',uncertain:'不确定',consistent:'一致',inconsistent:'不一致',met:'标准满足',not_met:'标准未满足',needs_visual:'需要看图',text_only:'仅文本审核',targeted_visual_resolution:'定向图像复核'};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const badge=x=>`<span class="badge ${esc(x)}">${esc(labels[x]||x)}</span>`;
-function drawFilters(){const keys=['all','screened_pass','normal','annotation_anomaly','task_not_met','uncertain'];document.querySelector('#filters').innerHTML=keys.map(k=>`<button class="${filter===k?'active':''}" onclick="setFilter('${k}')">${labels[k]}</button>`).join('')}
+function drawFilters(){const keys=['all','normal','annotation_anomaly','task_not_met','uncertain'];document.querySelector('#filters').innerHTML=keys.map(k=>`<button class="${filter===k?'active':''}" onclick="setFilter('${k}')">${labels[k]}</button>`).join('')}
 function setFilter(x){filter=x;const arr=shown();if(!arr.some(e=>e.episode_id===selected))selected=arr[0]?.episode_id;sub=0;draw()}
 function shown(){return D.episodes.filter(e=>filter==='all'||e.output.review_status===filter)}
 function drawList(){document.querySelector('#list').innerHTML=shown().map(e=>`<button class="ep ${e.episode_id===selected?'active':''}" onclick="pick('${e.episode_id}')"><div class="ep-id">${esc(e.episode_id)}</div>${badge(e.output.review_status)}</button>`).join('')}
 function pick(id){selected=id;sub=0;draw()}
 function pickSub(i){sub=i;drawContent()}
 function textBlock(title,text){return `<div class="block"><h3>${esc(title)}</h3><p>${esc(text||'无')}</p></div>`}
-function drawContent(){const e=D.episodes.find(x=>x.episode_id===selected);if(!e){document.querySelector('#content').innerHTML='<p>无结果</p>';return}const o=e.output,p=e.payload,subs=p.final_annotation?.subtasks||[],reviews=o.subtask_reviews||[],r=reviews.find(x=>x.subtask_index===sub)||reviews[sub]||{},s=subs[sub]||{},r1=e.round1;
+function drawContent(){const e=D.episodes.find(x=>x.episode_id===selected);if(!e){document.querySelector('#content').innerHTML='<p>无结果</p>';return}const o=e.output,p=e.payload,subs=p.final_annotation?.subtasks||[],reviews=o.subtask_reviews||[],r=reviews.find(x=>x.subtask_index===sub)||reviews[sub]||{},s=subs[sub]||{},r1=e.round1,r2=e.round2,resolutions=(r2?.resolutions||[]).filter(x=>String(x.subtask_index)===String(r.subtask_index));
 const issues=(o.issues||[]).length?`<div class="issues"><h3>异常问题</h3>${o.issues.map((x,i)=>`<div class="issue"><strong>${i+1}. ${esc(x.issue_type)} · ${esc(x.certainty)}</strong><p>${esc(x.reason)}</p><div class="muted">重标范围：${esc(x.reannotation_scope)}　涉及段：${esc((x.affected_subtasks||[]).join(', '))}</div></div>`).join('')}</div>`:'';
-const screening=r1?`<div class="summary"><div class="status-row">${badge(r1.screening_status)}<span class="badge">${esc(e.audit_route)}</span></div><p><strong>第一轮：</strong>${esc(r1.reason)}</p><p><strong>目标段：</strong>${esc((r1.target_subtasks||[]).join(', ')||'无')}</p>${(r1.concerns||[]).map(x=>`<div class="evidence"><strong>${esc(x.concern_type)}</strong><br>${esc(x.reason)}<br><span class="muted">二轮核验：${esc(x.detail_request)}</span></div>`).join('')}</div>`:'';
+const screening=r1?`<div class="summary"><div class="status-row">${badge(r1.review_status)}${badge(e.audit_route)}</div><p><strong>第一轮纯文本结论：</strong>${esc(r1.reason)}</p><p><strong>视觉请求：</strong>${esc((r1.visual_requests||[]).map(x=>'Subtask '+x.subtask_index+'：'+x.question).join('；')||'无')}</p></div>`:'';
 const tabs=subs.map((x,i)=>`<button class="${sub===i?'active':''}" onclick="pickSub(${i})">Subtask ${i}</button>`).join('');
-let evidence=r.visual_evidence||[];if(!evidence.length)evidence=e.frames.filter(f=>(f.references||[]).some(x=>String(x.subtask_index)===String(sub))).map(f=>({frame_ref:f.frame_ref,observation:(f.references||[]).filter(x=>String(x.subtask_index)===String(sub)).map(x=>x.role).join(', ')}));
+let evidence=resolutions.flatMap(x=>x.visual_evidence||[]);if(!evidence.length)evidence=e.frames.filter(f=>(f.references||[]).some(x=>String(x.subtask_index)===String(r.subtask_index??sub))).map(f=>({frame_ref:f.frame_ref,observation:(f.references||[]).filter(x=>String(x.subtask_index)===String(r.subtask_index??sub)).map(x=>x.role).join(', ')}));
 const ev=evidence.map(v=>{const f=e.frames.find(x=>x.frame_ref===v.frame_ref);return `<div class="frame">${f?`<img src="${esc(f.asset)}" loading="lazy">`:''}<div class="cap"><strong>${esc(v.frame_ref)}${f?.timestamp_sec!=null?' · '+esc(f.timestamp_sec)+'s':''}</strong>${esc(v.observation)}</div></div>`}).join('');
-document.querySelector('#content').innerHTML=`<h2>${esc(e.episode_id)}</h2><div class="muted">${esc(p.task)}</div>${screening}<div class="summary"><div class="status-row">${badge(o.review_status)}${badge(o.annotation_visual_status)}${badge(o.criterion_status)}</div><p><strong>最终结论：</strong>${esc(o.reason)}</p><p><strong>人工审核标准：</strong>${esc(p.review_standard)}</p></div>${issues}<div class="tabs">${tabs}</div><div class="panel"><div class="grid"><div>${textBlock('原始 segment_summary',s.segment_summary)}${textBlock('arm_1',s.arm_1?.description)}${textBlock('arm_2',s.arm_2?.description)}</div><div><div class="block"><h3>${r1?'第二轮逐段审核':'逐段图文审核'}</h3><div class="status-row">${badge(r.annotation_visual_status||'compact_only')}${badge(r.criterion_status||'compact_only')}<span class="badge">${esc(r.keyframe_quality||'')}</span></div><p>${esc(r.reason||'第一轮未发现具体疑点，未调用第二轮。')}</p></div><h3>${r.visual_evidence?'模型引用的视觉证据':'第一轮输入帧'}</h3><div class="gallery">${ev||'<p>该段无输入帧</p>'}</div></div></div></div>`}
+const textEv=(r.text_evidence||[]).map(x=>`<div class="evidence"><strong>${esc(x.source)} ${esc(x.path)}</strong><br>${esc(x.quote)}</div>`).join('');const visualReview=resolutions.map(x=>`<div class="evidence"><strong>${badge(x.annotation_visual_status)} ${badge(x.criterion_status)}</strong><br>${esc(x.question)}<br>${esc(x.reason)}</div>`).join('');
+document.querySelector('#content').innerHTML=`<h2>${esc(e.episode_id)}</h2><div class="muted">${esc(p.task)}</div>${screening}<div class="summary"><div class="status-row">${badge(o.review_status)}${badge(o.annotation_visual_status)}${badge(o.criterion_status)}</div><p><strong>最终结论：</strong>${esc(o.reason)}</p><p><strong>人工审核标准：</strong>${esc(p.review_standard)}</p></div>${issues}<div class="tabs">${tabs}</div><div class="panel"><div class="grid"><div>${textBlock('原始 segment_summary',s.segment_summary)}${textBlock('arm_1',s.arm_1?.description)}${textBlock('arm_2',s.arm_2?.description)}</div><div><div class="block"><h3>第一轮逐段文本审核</h3><div class="status-row">${badge(r.text_status||'')}</div><p><strong>核查声明：</strong>${esc(r.claim_under_review)}</p><p>${esc(r.reason)}</p>${textEv}${r.visual_question?`<p><strong>视觉问题：</strong>${esc(r.visual_question)}</p>`:''}</div>${visualReview?`<div class="block"><h3>第二轮定向视觉结论</h3>${visualReview}</div>`:''}<h3>仅在需要视觉裁决时输入的帧</h3><div class="gallery">${ev||'<p>该段由纯文本确定，没有向第二轮发送图像。</p>'}</div></div></div></div>`}
 function draw(){drawFilters();drawList();drawContent();document.querySelector('#stats').textContent=`${D.episodes.length} 条 · ${D.total_images} 张输入帧`}draw();
 </script></body></html>'''
 
@@ -48,10 +49,13 @@ def export_episode(episode_dir: Path, assets_root: Path) -> dict[str, Any]:
         wrapper = load_json(episode_dir / "final.json")
         detail = wrapper.get("round2")
         input_data = load_json(episode_dir / ("round2/input.json" if detail else "round1/input.json"))
-        output = detail or {
-            "review_status": "screened_pass", "annotation_visual_status": "compact_only",
-            "criterion_status": "compact_only", "reason": wrapper["round1"]["reason"],
-            "subtask_reviews": [], "issues": [],
+        output = {
+            "review_status": wrapper["final_status"],
+            "annotation_visual_status": wrapper.get("annotation_status"),
+            "criterion_status": wrapper.get("criterion_status"),
+            "reason": wrapper["round1"]["reason"],
+            "subtask_reviews": wrapper["round1"].get("subtask_reviews", []),
+            "issues": [],
         }
     else:
         wrapper = None
@@ -76,6 +80,7 @@ def export_episode(episode_dir: Path, assets_root: Path) -> dict[str, Any]:
         "payload": payload,
         "output": output,
         "round1": wrapper.get("round1") if wrapper else None,
+        "round2": wrapper.get("round2") if wrapper else None,
         "audit_route": wrapper.get("audit_route") if wrapper else "single_round",
         "frames": frames,
     }

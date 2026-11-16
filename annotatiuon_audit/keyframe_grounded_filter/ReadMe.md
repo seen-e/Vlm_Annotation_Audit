@@ -64,7 +64,6 @@ python -m annotatiuon_audit.keyframe_grounded_filter.run
 
 ## 自适应二轮方案
 
-`two_round/` 提供与本模块并列的低成本入口。第一轮只发送每段起止帧和最多一张
-代表性过程帧，定位有具体视觉线索的疑点；第二轮仅为目标 subtask 扩展全部证据帧，
-并保留相邻边界上下文。第一轮通过保存为 `screened_pass`，不会冒充完整审核后的
-`normal`。详细配置、输出目录和命令见 `two_round/ReadMe.md`。
+`two_round/` 提供文本优先的并列入口。第一轮不发送图像，并强制逐段检查最终文本与
+Stage4 候选文本；只有无法从文本裁决的具体核心声明才进入第二轮，第二轮仅发送目标
+subtask 的证据帧。详细配置、输出目录和命令见 `two_round/ReadMe.md`。

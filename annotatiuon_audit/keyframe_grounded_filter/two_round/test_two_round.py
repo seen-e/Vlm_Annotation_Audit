@@ -1,7 +1,8 @@
 import unittest
 
-from .schema import validate_screening
-from .selection import compact_job, detail_job
+from .run import merge_reviews
+from .schema import validate_text_review, validate_visual_review
+from .selection import detail_job, text_job
 
 
 def frame(index, references):
@@ -15,11 +16,9 @@ class TwoRoundTests(unittest.TestCase):
         frames = [
             frame(0, refs(0, 'action_start_candidate')),
             frame(1, refs(0, 'process_keyframe')),
-            frame(2, refs(0, 'process_evidence')),
-            frame(3, refs(0, 'action_end_candidate') + refs(1, 'action_start_candidate')),
-            frame(4, refs(1, 'process_keyframe')),
-            frame(5, refs(1, 'process_keyframe')),
-            frame(6, refs(1, 'action_end_candidate')),
+            frame(2, refs(0, 'action_end_candidate') + refs(1, 'action_start_candidate')),
+            frame(3, refs(1, 'process_keyframe')),
+            frame(4, refs(1, 'action_end_candidate')),
         ]
         images = [{**value, 'path': '/tmp/x.jpg', 'mime_type': 'image/jpeg',
                    'size': 1, 'sha256': str(value['frame_index'])} for value in frames]
@@ -28,42 +27,95 @@ class TwoRoundTests(unittest.TestCase):
             'sources': {},
             'payload': {
                 'episode_id': 'ep_1', 'review_standard': '完成任务', 'task': 'task',
-                'final_annotation': {'subtasks': [{'subtask_index': 0}, {'subtask_index': 1}]},
+                'final_annotation': {'subtasks': [
+                    {'subtask_index': 0, 'segment_summary': '移动红色物体'},
+                    {'subtask_index': 1, 'segment_summary': '放置红色物体'},
+                ]},
                 'keyframe_annotation': {'subtasks': [
-                    {'annotation': {'keyframes': [{}]}}, {'annotation': {'keyframes': [{}, {}]}}]},
+                    {'annotation': {'completion_criterion': '移动红色物体'}},
+                    {'annotation': {'completion_criterion': '放置红色物体'}},
+                ]},
                 'visual_frames': frames,
             },
             'images': images,
         }
 
-    def test_compact_uses_boundaries_and_one_process_frame(self):
-        selected = compact_job(self.job, 10)
-        self.assertEqual([value['frame_index'] for value in selected['payload']['visual_frames']],
-                         [0, 1, 3, 5, 6])
-
-    def test_detail_keeps_compact_set_and_expands_target(self):
-        screening = {
-            'episode_id': 'ep_1', 'screening_status': 'needs_detail', 'reason': '存在疑点',
-            'target_subtasks': [0], 'concerns': [{
-                'concern_type': 'annotation_visual_mismatch', 'subtask_indices': [0],
-                'reason': '状态可能不符',
-                'visual_evidence': [{'frame_ref': 'frame_00000003', 'observation': '状态不同'}],
-                'detail_request': '核对过程变化',
-            }],
+    def text_review(self, second_status='needs_visual'):
+        visual = second_status == 'needs_visual'
+        return {
+            'episode_id': 'ep_1',
+            'review_status': 'needs_visual' if visual else 'normal',
+            'annotation_text_status': 'uncertain' if visual else 'consistent',
+            'criterion_text_status': 'met',
+            'reason': '第二段需要图像确认' if visual else '文本自洽',
+            'subtask_reviews': [
+                {'subtask_index': 0, 'text_status': 'consistent',
+                 'claim_under_review': '移动红色物体', 'reason': '两份文本一致',
+                 'text_evidence': [{'source': 'final_annotation',
+                                    'path': '/subtasks/0/segment_summary',
+                                    'quote': '移动红色物体'}], 'visual_question': None},
+                {'subtask_index': 1, 'text_status': second_status,
+                 'claim_under_review': '红色物体已被放置',
+                 'reason': '文本未提供可验证终态' if visual else '两份文本一致',
+                 'text_evidence': [{'source': 'final_annotation',
+                                    'path': '/subtasks/1/segment_summary',
+                                    'quote': '放置红色物体'}],
+                 'visual_question': '结束帧中红色物体是否已稳定放置？' if visual else None},
+            ],
+            'visual_requests': ([{'request_id': 'q1', 'subtask_index': 1,
+                                  'dimension': 'annotation',
+                                  'question': '结束帧中红色物体是否已稳定放置？'}]
+                                if visual else []),
         }
-        selected = detail_job(self.job, screening, 10)
-        self.assertEqual([value['frame_index'] for value in selected['payload']['visual_frames']],
-                         [0, 1, 2, 3, 5, 6])
-        self.assertEqual(selected['payload']['round1_screening'], screening)
 
-    def test_screening_schema_requires_concrete_targets(self):
-        payload = self.job['payload']
-        passed = {'episode_id': 'ep_1', 'screening_status': 'pass', 'reason': '未见具体疑点',
-                  'target_subtasks': [], 'concerns': []}
-        validate_screening(passed, payload)
-        invalid = {**passed, 'screening_status': 'uncertain'}
-        with self.assertRaisesRegex(ValueError, 'requires concrete'):
-            validate_screening(invalid, payload)
+    def test_round1_is_strictly_text_only(self):
+        selected = text_job(self.job)
+        self.assertEqual(selected['images'], [])
+        self.assertNotIn('visual_frames', selected['payload'])
+        self.assertEqual(selected['payload']['audit_round']['image_count'], 0)
+
+    def test_text_schema_requires_every_subtask(self):
+        payload = text_job(self.job)['payload']
+        result = self.text_review()
+        validate_text_review(result, payload)
+        result['subtask_reviews'].pop()
+        with self.assertRaisesRegex(ValueError, 'coverage'):
+            validate_text_review(result, payload)
+
+    def test_text_schema_requires_verbatim_evidence(self):
+        payload = text_job(self.job)['payload']
+        result = self.text_review()
+        result['subtask_reviews'][0]['text_evidence'][0]['quote'] = '不存在的原文'
+        with self.assertRaisesRegex(ValueError, 'verbatim'):
+            validate_text_review(result, payload)
+
+    def test_detail_contains_only_requested_subtask_frames(self):
+        selected = detail_job(self.job, self.text_review(), 10)
+        self.assertEqual([value['frame_index'] for value in selected['payload']['visual_frames']],
+                         [2, 3, 4])
+        self.assertEqual([value['frame_index'] for value in selected['images']], [2, 3, 4])
+        self.assertEqual(selected['payload']['round1_text_review'], self.text_review())
+
+    def test_visual_schema_resolves_exact_requests(self):
+        selected = detail_job(self.job, self.text_review(), 10)
+        result = {'episode_id': 'ep_1', 'resolutions': [{
+            'request_id': 'q1', 'subtask_index': 1,
+            'question': '结束帧中红色物体是否已稳定放置？',
+            'annotation_visual_status': 'consistent', 'criterion_status': 'not_applicable',
+            'reason': '结束帧可见物体稳定在目标位置',
+            'visual_evidence': [{'frame_ref': 'frame_00000004', 'observation': '物体位于桌面'}],
+        }]}
+        validate_visual_review(result, selected['payload'])
+
+    def test_merge_promotes_visual_mismatch(self):
+        visual = {'episode_id': 'ep_1', 'resolutions': [{
+            'request_id': 'q1', 'subtask_index': 1, 'question': 'x',
+            'annotation_visual_status': 'inconsistent', 'criterion_status': 'not_applicable',
+            'reason': 'x', 'visual_evidence': [],
+        }]}
+        status, annotation, criterion = merge_reviews(self.text_review(), visual)
+        self.assertEqual((status, annotation, criterion),
+                         ('annotation_anomaly', 'inconsistent', 'met'))
 
 
 if __name__ == '__main__':

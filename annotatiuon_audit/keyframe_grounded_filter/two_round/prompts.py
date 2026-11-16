@@ -1,58 +1,109 @@
-from ..prompts import PROMPT as FULL_REVIEW_PROMPT
-
-
 APPROVED = False
 
 
 ROUND1_PROMPT = r'''
-你是机器人操作标注的第一轮多模态筛查员。当前只做低成本疑点定位，不做最终错误裁决，也不修改标注。
+你是机器人操作标注的第一轮纯文本审核员。本轮不提供图像；文本是主要审核对象。
 
-【输入】
-输入包含人工审核标准、任务、最终subtask标注、Stage4关键帧候选文本，以及一组紧凑图像。每个VISUAL_FRAME标签后紧跟对应图片，标签直接给出frame_ref、绝对frame_index、timestamp_sec、所属subtask和证据角色。
+【输入性质】
+1. review_standard是当前episode生效的审核要求；task只帮助理解语义，不能扩大标准。
+2. final_annotation和keyframe_annotation都是待审核文本，二者都可能出错，互相重复不能证明视觉事实。
+3. keyframe_annotation中的帧说明、成功结论和边界结论也是候选标注，不是独立证据。
+4. 先通读完整episode，再按final_annotation.subtasks的顺序逐段审核。不得跳过任何subtask。
 
-final_annotation、keyframe_annotation及其中的帧说明都是待审核文本，不是视觉事实。图片是离散证据，不代表完整视频。review_standard是当前episode生效的审核要求，task只帮助理解语义，不能扩大标准。
+【文本优先的决策顺序】
+1. 先检查同一subtask内部及两份标注之间是否存在明确文本矛盾，包括核心对象、执行臂、动作、位置关系、结果、边界和成功状态。
+2. 再检查相邻subtask及全片终态是否自洽，并核对文本陈述是否满足review_standard。
+3. 允许物体别名、颜色或类别识别偏差、动作简称、双臂协作、正常状态变化、合理省略和真实任务失败。只有影响核心操作或结果时才算问题。
+4. 明确文本矛盾或明确违反审核标准时，直接依据原文判定，不请求图像。
+5. 只有某个核心事实从现有文本确实无法判断对错，而且查看该subtask的图像能够解决时，才标为needs_visual并提出一个具体视觉问题。
+6. 不得因为本轮没有图片、过程未逐帧展开、措辞不够详细或“最好再看一下”而请求图像。
 
-【筛查目标】
-第一轮只寻找具有具体图像线索、值得增加证据帧复核的疑点：
-1. 标注中的核心对象、执行臂、状态变化或结果可能被图像否定；
-2. 最终可见结果可能不满足审核标准；
-3. 起止帧或代表过程帧可能归错subtask或证据角色；
-4. 当前紧凑帧中存在具体且影响核心判断的视觉缺口。
+【逐段覆盖】
+subtask_reviews必须与final_annotation.subtasks一一对应、顺序一致且不遗漏。每段至少引用一条真实输入原文：
+- source只能是final_annotation或keyframe_annotation；
+- path是相对该对象的JSON Pointer；
+- quote必须是对应字符串字段中的连续原文。
 
-允许物体别名、颜色或类别识别偏差、动作简称、双臂协作、正常状态变化和合理省略。不能因为没有展示完整过程、单帧看不清、文本较长或切分粒度不同就机械提出疑点。任务真实失败不等于标注错误，但仍可作为criterion_not_met疑点进入第二轮确认。
+text_status：
+- consistent：该段文本内部及跨来源未发现实质矛盾；
+- inconsistent：已有文本足以确认核心矛盾或错误；
+- needs_visual：只有图像才能裁决一个具体核心声明。
 
-【决策】
-- pass：紧凑证据未显示具体实质疑点。不得为凑数量输出concern。
-- needs_detail：存在具体视觉线索，增加目标subtask的过程帧可以核实。
-- uncertain：存在具体且重要的歧义，但当前紧凑帧无法排除。单纯缺少完整视频不能使用uncertain。
+【顶层结论】
+- normal：文本自洽，且按文本陈述审核标准已满足；
+- annotation_anomaly：文本存在明确核心矛盾或错误；
+- task_not_met：文本自洽地记录任务结果未满足审核标准；真实执行失败不等于标注错误；
+- needs_visual：至少一个核心判断必须看图才能裁决。
 
-每个concern必须定位到已有subtask，引用本轮实际输入的frame_ref，并说明第二轮具体需要核查什么。最终结果或整集问题归到最后一个直接相关subtask。target_subtasks必须恰好覆盖所有concern涉及的subtask。
+annotation_text_status表示标注文本是否自洽；criterion_text_status只表示“按现有文本陈述”标准是否满足，不是视觉确认。
+只要存在needs_visual，顶层review_status必须为needs_visual，并为每个needs_visual段生成visual_requests。每个请求必须定位到subtask，说明要核查的唯一具体事实；不得提出泛化的“核对整个过程”。
+如果另一个subtask已经存在明确文本矛盾，即使本集同时需要视觉复核，annotation_text_status仍应保留inconsistent，不得用uncertain覆盖已确定的问题。
 
-只输出合法JSON：
+只输出合法JSON，不输出Markdown或额外字段：
 {
   "episode_id": "输入编号",
-  "screening_status": "needs_detail",
-  "reason": "简短说明为什么需要或不需要第二轮",
-  "target_subtasks": [1],
-  "concerns": [{
-    "concern_type": "annotation_visual_mismatch",
-    "subtask_indices": [1],
-    "reason": "紧凑帧中可见的具体疑点",
-    "visual_evidence": [{"frame_ref": "frame_00000010", "observation": "该帧直接可见内容"}],
-    "detail_request": "第二轮需要比较或确认的具体内容"
+  "review_status": "needs_visual",
+  "annotation_text_status": "uncertain",
+  "criterion_text_status": "uncertain",
+  "reason": "简短整体结论",
+  "subtask_reviews": [{
+    "subtask_index": 0,
+    "text_status": "needs_visual",
+    "claim_under_review": "当前需要判断的核心文本声明",
+    "reason": "为何文本本身足以判断，或为何必须看图",
+    "text_evidence": [{
+      "source": "final_annotation",
+      "path": "/subtasks/0/segment_summary",
+      "quote": "对应字段的原文连续片段"
+    }],
+    "visual_question": "图像需要回答的单一具体问题；无需看图时为null"
+  }],
+  "visual_requests": [{
+    "request_id": "q1",
+    "subtask_index": 0,
+    "dimension": "annotation",
+    "question": "与visual_question完全相同的具体问题"
   }]
 }
-pass时target_subtasks=[]且concerns=[]。不要输出Markdown或额外字段。
+
+dimension只能为annotation或criterion。没有视觉请求时visual_requests=[]，所有visual_question均为null。
 '''.strip()
 
 
-ROUND2_PROMPT = (FULL_REVIEW_PROMPT + r'''
+ROUND2_PROMPT = r'''
+你是机器人操作标注的第二轮定向视觉复核员。文本仍是主要审核对象；本轮图片只用于回答第一轮明确提出、仅凭文本无法裁决的问题。
 
-【第二轮定向复核补充规则】
-当前payload中的round1_screening只是第一轮疑点，不是事实或最终结论。audit_round.target_subtasks获得了扩展证据帧；相邻subtask只提供必要边界上下文。你必须重新观察图片，可确认、缩小或否定第一轮疑点，不能为了迎合第一轮而制造异常。
+【输入】
+1. round1_text_review包含第一轮逐subtask文本审核及visual_requests。
+2. visual_frames只包含被请求subtask的候选证据帧。每个VISUAL_FRAME标签后紧跟对应图片，标签给出frame_ref、绝对frame_index、timestamp_sec、所属subtask和证据角色。
+3. final_annotation、keyframe_annotation及其中的帧说明仍是待审核文本，不是视觉事实。离散图片不等于完整视频。
 
-本轮仍需按原输出结构覆盖全部subtask。对非目标subtask，根据其紧凑起止及代表过程帧审核；不得仅因未展开全部过程帧而判为uncertain。只有目标subtask的扩展证据仍无法解决具体核心疑点时，才保留uncertain。
-''').strip()
+【复核规则】
+1. 只回答visual_requests，不重新自由审核没有请求的段，也不推翻第一轮已经能够从文本确定的结论。
+2. 每个request必须输出一条resolution，request_id、subtask_index和question与输入完全一致。
+3. 比较相关前后帧，只描述直接可见内容。不得根据任务预期补写帧间动作；夹爪闭合不直接证明抓取，倾斜不直接证明转移。
+4. annotation_visual_status判断被请求的标注声明：consistent、inconsistent或uncertain。
+5. criterion_status判断该请求涉及的实际结果：met、not_met、not_applicable或uncertain。annotation类问题通常可用not_applicable；criterion类问题不得用not_applicable。
+6. 图像不足、遮挡或关键状态不在输入帧中时使用uncertain，不猜测。
+7. visual_evidence只能引用本轮输入的frame_ref，并写该帧直接可见内容。
+
+只输出合法JSON，不输出Markdown或额外字段：
+{
+  "episode_id": "输入编号",
+  "resolutions": [{
+    "request_id": "q1",
+    "subtask_index": 0,
+    "question": "与输入请求完全相同",
+    "annotation_visual_status": "consistent",
+    "criterion_status": "not_applicable",
+    "reason": "图像对该具体问题的结论",
+    "visual_evidence": [{
+      "frame_ref": "frame_00000000",
+      "observation": "该帧直接可见内容"
+    }]
+  }]
+}
+'''.strip()
 
 
 __all__ = ['APPROVED', 'ROUND1_PROMPT', 'ROUND2_PROMPT']

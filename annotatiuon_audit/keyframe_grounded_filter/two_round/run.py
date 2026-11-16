@@ -10,21 +10,21 @@ import time
 from ..client import complete, credentials
 from ..data import prepare
 from ..run import call_config, load_config, request_identity
-from ..schema import validate as validate_detail
 from ...episode_level_filter.data import read_json, save_json, signature
 from . import prompts
-from .schema import validate_screening
-from .selection import compact_job, detail_job
+from .schema import validate_text_review, validate_visual_review
+from .selection import detail_job, text_job
 
 
 def load_two_round_config(path):
     cfg = load_config(path)
-    for round_name in ('round1', 'round2'):
-        value = cfg.get(round_name)
-        if not isinstance(value, dict) or type(value.get('max_images_per_episode')) is not int or \
-                value['max_images_per_episode'] < 1:
-            raise ValueError(round_name + '.max_images_per_episode must be a positive integer')
-    if type(cfg['round2'].get('include_neighbor_boundaries')) is not bool:
+    if not isinstance(cfg.get('round1'), dict) or cfg['round1'].get('text_only') is not True:
+        raise ValueError('round1.text_only must be true')
+    value = cfg.get('round2')
+    if not isinstance(value, dict) or type(value.get('max_images_per_episode')) is not int or \
+            value['max_images_per_episode'] < 1:
+        raise ValueError('round2.max_images_per_episode must be a positive integer')
+    if type(value.get('include_neighbor_boundaries')) is not bool:
         raise ValueError('round2.include_neighbor_boundaries must be boolean')
     return cfg
 
@@ -52,8 +52,12 @@ def request_one(folder, job, prompt, cfg, auth, validator, transport=complete):
     for attempt in range(cfg['model']['attempts']):
         directory = folder / f'attempt_{offset + attempt + 1:03d}'
         directory.mkdir(parents=True)
+        attempt_prompt = prompt
+        if feedback:
+            attempt_prompt += ('\n\n【上一响应校验失败】\n' + feedback +
+                               '\n请仅修正结构、枚举值或原文引用后重新输出完整JSON。')
         manifest = {
-            'system_prompt': prompt,
+            'system_prompt': attempt_prompt,
             'payload': job['payload'],
             'visual_sequence': [
                 {'label_before_image': {key: image.get(key) for key in
@@ -67,7 +71,7 @@ def request_one(folder, job, prompt, cfg, auth, validator, transport=complete):
         save_json(directory / 'messages_manifest.json', manifest)
         started = time.monotonic()
         try:
-            raw, finish = transport(prompt, job['payload'], job['images'], call_config(cfg), auth)
+            raw, finish = transport(attempt_prompt, job['payload'], job['images'], call_config(cfg), auth)
             (directory / 'raw_response.txt').write_text(raw, encoding='utf-8')
             save_json(directory / 'meta.json', {'finish_reason': finish,
                                                  'elapsed_sec': time.monotonic() - started})
@@ -86,28 +90,60 @@ def request_one(folder, job, prompt, cfg, auth, validator, transport=complete):
     raise RuntimeError(feedback)
 
 
+def merge_reviews(text_review, visual_review):
+    if visual_review is None:
+        return (text_review['review_status'], text_review['annotation_text_status'],
+                text_review['criterion_text_status'])
+    requests = {request['request_id']: request for request in text_review['visual_requests']}
+    annotation = text_review['annotation_text_status']
+    criterion = text_review['criterion_text_status']
+    annotation_values = [value['annotation_visual_status'] for value in visual_review['resolutions']
+                         if requests[value['request_id']]['dimension'] == 'annotation']
+    criterion_values = [value['criterion_status'] for value in visual_review['resolutions']
+                        if requests[value['request_id']]['dimension'] == 'criterion']
+    if annotation_values and annotation != 'inconsistent':
+        annotation = ('inconsistent' if 'inconsistent' in annotation_values else
+                      'uncertain' if 'uncertain' in annotation_values else 'consistent')
+    if criterion_values and criterion != 'not_met':
+        criterion = ('not_met' if 'not_met' in criterion_values else
+                     'uncertain' if 'uncertain' in criterion_values else 'met')
+    if annotation == 'inconsistent':
+        status = 'annotation_anomaly'
+    elif annotation == 'uncertain' or criterion == 'uncertain':
+        status = 'uncertain'
+    elif criterion == 'not_met':
+        status = 'task_not_met'
+    else:
+        status = 'normal'
+    return status, annotation, criterion
+
+
 def process_episode(root, job, cfg, auth, transport=complete):
     episode_root = Path(root) / job['episode_id']
-    compact = compact_job(job, cfg['round1']['max_images_per_episode'])
-    screening, cached1 = request_one(episode_root / 'round1', compact, prompts.ROUND1_PROMPT,
-                                     cfg, auth, validate_screening, transport)
-    detailed = screening['screening_status'] != 'pass'
-    detail = None
+    first = text_job(job)
+    text_review, cached1 = request_one(episode_root / 'round1', first, prompts.ROUND1_PROMPT,
+                                       cfg, auth, validate_text_review, transport)
+    detailed = bool(text_review['visual_requests'])
+    visual_review = None
     cached2 = False
     if detailed:
-        expanded = detail_job(job, screening, cfg['round2']['max_images_per_episode'],
+        expanded = detail_job(job, text_review, cfg['round2']['max_images_per_episode'],
                               cfg['round2']['include_neighbor_boundaries'])
-        detail, cached2 = request_one(episode_root / 'round2', expanded, prompts.ROUND2_PROMPT,
-                                      cfg, auth, validate_detail, transport)
+        visual_review, cached2 = request_one(episode_root / 'round2', expanded,
+                                             prompts.ROUND2_PROMPT, cfg, auth,
+                                             validate_visual_review, transport)
+    status, annotation_status, criterion_status = merge_reviews(text_review, visual_review)
     final = {
         'episode_id': job['episode_id'],
-        'audit_route': 'round2_completed' if detailed else 'round1_only',
-        'final_status': detail['review_status'] if detail else 'screened_pass',
-        'round1': screening,
-        'round2': detail,
+        'audit_route': 'targeted_visual_resolution' if detailed else 'text_only',
+        'final_status': status,
+        'annotation_status': annotation_status,
+        'criterion_status': criterion_status,
+        'round1': text_review,
+        'round2': visual_review,
     }
     save_json(episode_root / 'final.json', final)
-    return final, cached1, cached2, len(compact['images']), len(expanded['images']) if detailed else 0
+    return final, cached1, cached2, 0, len(expanded['images']) if detailed else 0
 
 
 def run_jobs(jobs, cfg, auth, transport=complete):
@@ -122,7 +158,7 @@ def run_jobs(jobs, cfg, auth, transport=complete):
     failures, results = {}, {}
     progress = {
         'started_at': datetime.now(timezone.utc).isoformat(), 'total': len(jobs), 'completed': 0,
-        'failed': 0, 'screened_pass': 0, 'round2_completed': 0, 'normal': 0,
+        'failed': 0, 'text_only': 0, 'round2_completed': 0, 'normal': 0,
         'annotation_anomaly': 0, 'task_not_met': 0, 'uncertain': 0,
         'round1_cached': 0, 'round2_cached': 0, 'round1_images': 0, 'round2_images': 0,
         'episode_batchsize': cfg['episode_batchsize'],
@@ -134,7 +170,7 @@ def run_jobs(jobs, cfg, auth, transport=complete):
                         all_succeeded=finished and not failures)
         save_json(root / 'progress.json', progress)
         save_json(root / 'failures.json', failures)
-        for status in ('screened_pass', 'normal', 'annotation_anomaly', 'task_not_met', 'uncertain'):
+        for status in ('normal', 'annotation_anomaly', 'task_not_met', 'uncertain'):
             save_json(root / (status + '.json'), [results[key] for key in sorted(results)
                                                   if results[key]['final_status'] == status])
         print(json.dumps(progress, ensure_ascii=False), flush=True)
@@ -156,7 +192,8 @@ def run_jobs(jobs, cfg, auth, transport=complete):
         if plan_path.exists() and read_json(plan_path) != plan:
             raise ValueError('Run selection or inputs changed; choose a new output_root')
         save_json(plan_path, plan)
-        public_model = {key: value for key, value in cfg['model'].items() if key != 'credentials_file'}
+        public_model = {key: value for key, value in cfg['model'].items()
+                        if key != 'credentials_file'}
         save_json(root / 'config_snapshot.json', {**cfg, 'model': public_model})
         save_json(root / 'prompt_snapshot.json', {'round1': prompts.ROUND1_PROMPT,
                                                    'round2': prompts.ROUND2_PROMPT})
@@ -174,10 +211,11 @@ def run_jobs(jobs, cfg, auth, transport=complete):
                     progress['round2_cached'] += int(cached2)
                     progress['round1_images'] += images1
                     progress['round2_images'] += images2
-                    status = result['final_status']
-                    progress[status] += 1
-                    if result['audit_route'] == 'round2_completed':
+                    progress[result['final_status']] += 1
+                    if result['audit_route'] == 'targeted_visual_resolution':
                         progress['round2_completed'] += 1
+                    else:
+                        progress['text_only'] += 1
                 except Exception as exc:
                     failures[episode_id] = str(exc).replace(auth['api_key'], '[REDACTED]')
                     progress['failed'] += 1
@@ -189,14 +227,16 @@ def run_jobs(jobs, cfg, auth, transport=complete):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Run compact screening followed by targeted visual audit.')
+    parser = argparse.ArgumentParser(
+        description='Run text-first review followed by targeted visual resolution.')
     parser.add_argument('--config', default=str(Path(__file__).with_name('config.yaml')))
     parser.add_argument('--dry-run', action='store_true')
     parser.add_argument('--pilot', action='store_true',
                         help='Allow draft prompts for a bounded explicit episode list')
     args = parser.parse_args()
     cfg = load_two_round_config(args.config)
-    if not args.dry_run and (not prompts.APPROVED or not prompts.ROUND1_PROMPT or not prompts.ROUND2_PROMPT):
+    if not args.dry_run and (not prompts.APPROVED or not prompts.ROUND1_PROMPT or
+                             not prompts.ROUND2_PROMPT):
         selected = cfg.get('episode_ids') or []
         if not args.pilot or not selected or len(selected) > cfg['pilot_max_episodes']:
             parser.error('Draft prompts require --pilot and 1..pilot_max_episodes explicit episode_ids.')
@@ -208,14 +248,13 @@ def main():
             print(json.dumps({'phase': 'preflight', 'validated': count, 'total': total}), flush=True)
 
     jobs = prepare(cfg, preflight)
-    compact = [compact_job(job, cfg['round1']['max_images_per_episode']) for job in jobs]
     if args.dry_run:
-        compact_counts = [len(job['images']) for job in compact]
         full_counts = [len(job['images']) for job in jobs]
-        print(json.dumps({'episodes': len(jobs), 'round1_images': sum(compact_counts),
-                          'round1_min': min(compact_counts), 'round1_max': max(compact_counts),
-                          'full_evidence_images': sum(full_counts), 'full_min': min(full_counts),
-                          'full_max': max(full_counts), 'api_calls': 0}, ensure_ascii=False))
+        print(json.dumps({'episodes': len(jobs), 'round1_images': 0,
+                          'round1_min': 0, 'round1_max': 0,
+                          'available_stage4_images': sum(full_counts),
+                          'available_min': min(full_counts), 'available_max': max(full_counts),
+                          'api_calls': 0}, ensure_ascii=False))
         return
     auth = credentials(cfg['model'])
     result = run_jobs(jobs, cfg, auth)

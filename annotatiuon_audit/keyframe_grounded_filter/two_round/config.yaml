@@ -18,10 +18,10 @@ max_image_bytes: 3000000 # Per-image source byte cap.
 max_text_chars: 600000 # Serialized full payload cap.
 image_detail: high # auto, low or high.
 round1:
-  max_images_per_episode: 32 # Start/end plus at most one representative process frame per subtask.
+  text_only: true # Hard invariant: no image or visual-frame metadata is sent in round 1.
 round2:
-  max_images_per_episode: 80 # Compact set plus all target-subtask evidence and neighbor boundaries.
-  include_neighbor_boundaries: true # Add only start/end frames from adjacent subtasks.
+  max_images_per_episode: 80 # Only Stage4 evidence frames belonging to requested subtasks.
+  include_neighbor_boundaries: false # Optional adjacent boundary context; keep false for strict targeting.
 model:
   credentials_file: ../../../.credentials/xb4v.yaml
   base_url: null
