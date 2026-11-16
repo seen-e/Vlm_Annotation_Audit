@@ -25,7 +25,8 @@ def load_config(path):
     cfg['keyframe_roots'] = [str((path.parent / value).resolve()) for value in cfg['keyframe_roots']]
     if cfg['model'].get('credentials_file'):
         cfg['model']['credentials_file'] = str((path.parent / cfg['model']['credentials_file']).resolve())
-    for key in ('episode_batchsize', 'input_workers', 'max_images_per_episode', 'max_image_bytes', 'max_text_chars'):
+    for key in ('episode_batchsize', 'input_workers', 'max_images_per_episode', 'max_image_bytes',
+                'max_text_chars', 'pilot_max_episodes'):
         if type(cfg[key]) is not int or cfg[key] < 1:
             raise ValueError(key + ' must be a positive integer')
     for key in ('attempts', 'max_tokens'):
@@ -169,10 +170,13 @@ def main():
     parser = argparse.ArgumentParser(description='Audit final annotations against Stage4 keyframe images.')
     parser.add_argument('--config', default=str(Path(__file__).with_name('config.yaml')))
     parser.add_argument('--dry-run', action='store_true', help='Validate text, keyframes and image coverage without API calls')
+    parser.add_argument('--pilot', action='store_true', help='Allow the draft prompt only for a bounded explicit episode list')
     args = parser.parse_args()
     cfg = load_config(args.config)
     if not args.dry_run and (not prompts.APPROVED or not prompts.PROMPT.strip()):
-        parser.error('Multimodal prompt is pending joint review. Only --dry-run is available.')
+        selected = cfg.get('episode_ids') or []
+        if not args.pilot or not prompts.PROMPT.strip() or not selected or len(selected) > cfg['pilot_max_episodes']:
+            parser.error('Draft prompt requires --pilot and 1..pilot_max_episodes explicit episode_ids.')
     print(json.dumps({'phase': 'preflight', 'input_workers': cfg['input_workers'],
                       'started_at': datetime.now(timezone.utc).isoformat()}), flush=True)
 

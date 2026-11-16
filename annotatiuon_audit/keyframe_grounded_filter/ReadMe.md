@@ -31,11 +31,14 @@ API 调用前失败，不静默裁切。
 ## 当前状态
 
 `prompts.py` 是第一版完整提示词，`APPROVED=False`。因此目前只允许 dry-run，避免在
-共同审核提示词和输出结构前误启动付费批量任务。
+共同审核提示词和输出结构前误启动付费批量任务。用户明确授权的小样本可以使用
+`--pilot`，但配置必须给出非空 `episode_ids` 且不超过 `pilot_max_episodes`；默认空列表
+不能借此启动全量请求。
 
 ```bash
 cd '/mnt/workspace/Subtask_Annotation _Review'
 python -m annotatiuon_audit.keyframe_grounded_filter.run --dry-run
+python -m annotatiuon_audit.keyframe_grounded_filter.run --config /path/to/pilot.yaml --pilot
 python -m unittest annotatiuon_audit.keyframe_grounded_filter.test_pipeline -v
 ```
 

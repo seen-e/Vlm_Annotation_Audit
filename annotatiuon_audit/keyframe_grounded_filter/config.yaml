@@ -10,6 +10,7 @@ sample_manifest_pattern: "{episode_id}/sample_manifest.json"
 frame_pattern: "{episode_id}/stage4_keyframes/frames/{frame_index:08d}.jpg"
 output_root: /mnt/data/chachaxu/dataset/robodojo/keyframe_grounded_audit_runs/pilot_v1 # Use a new directory for each prompt/input experiment.
 episode_ids: [] # Empty selects all standards; use a short list for the first pilot.
+pilot_max_episodes: 20 # --pilot may enable an unapproved draft prompt only for a bounded explicit list.
 episode_batchsize: 8 # Concurrent multimodal episode requests.
 input_workers: 32 # Concurrent read-only preflight.
 max_images_per_episode: 80 # Hard failure rather than silent frame truncation.
