@@ -20,7 +20,9 @@
 组内人数小于 text_clustering_min_group_size（默认3）时原样保留；不跨父场景组，
 不把聚类状态当作审核结论。入口及完整配置见 [VLM说明](episode_clustering/vlm_clustering/ReadMe.md)。
 原始任务指令及episode映射 → review_standard/vlm_review_standard → 每episode中文指令标准。
-每episode审核标准 + 最终subtask标注 → annotatiuon_audit（首轮实验已获用户授权，结果需人工复核）。
+每episode审核标准 + 最终subtask标注 → episode_level_filter纯文本审核。
+每episode审核标准 + 最终subtask标注 + Stage4关键帧文字及图片 → keyframe_grounded_filter多模态审核。
+两个审核方案并列运行、输出隔离；关键帧方案当前只开放dry-run，提示词待共同审核。
 
 DINO聚类与VLM聚类是可选分支，不要求先跑DINO再跑全量VLM。DINO中的refine_noise只对其未归类成员调用VLM。
 人工标准模块当前接受VLM两轮输出；不能把DINO clusters.json直接当成它的final.json输入。

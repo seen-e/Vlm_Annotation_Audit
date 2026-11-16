@@ -31,10 +31,11 @@ python -m episode_clustering.scene_clustering_dino.run --help
 python -m episode_clustering.vlm_clustering.image_base_clustering.run --help
 python -m episode_clustering.vlm_clustering.run --stage text --dry-run
 python -m annotatiuon_audit.episode_level_filter.run --dry-run
+python -m annotatiuon_audit.keyframe_grounded_filter.run --dry-run
 python -m review_standard.vlm_review_standard.run --dry-run
 
 # 离线单元测试，不调用模型 API。
-python -m unittest episode_clustering.scene_clustering_dino.embedding_extraction.test_features episode_clustering.scene_clustering_dino.test_clustering episode_clustering.scene_clustering_dino.test_refine_noise episode_clustering.vlm_clustering.image_base_clustering.test_pipeline episode_clustering.vlm_clustering.txt_base_clustering.test_pipeline annotatiuon_audit.episode_level_filter.test_pipeline review_standard.vlm_review_standard.test_pipeline
+python -m unittest episode_clustering.scene_clustering_dino.embedding_extraction.test_features episode_clustering.scene_clustering_dino.test_clustering episode_clustering.scene_clustering_dino.test_refine_noise episode_clustering.vlm_clustering.image_base_clustering.test_pipeline episode_clustering.vlm_clustering.txt_base_clustering.test_pipeline annotatiuon_audit.episode_level_filter.test_pipeline annotatiuon_audit.keyframe_grounded_filter.test_pipeline review_standard.vlm_review_standard.test_pipeline
 ```
 
 ## 同步范围

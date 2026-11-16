@@ -1,0 +1,32 @@
+# Parallel multimodal audit. Paths are resolved relative to this file.
+standards_path: /mnt/data/chachaxu/dataset/robodojo/robodojo_review_standard.json # Effective per-episode standards.
+annotations_root: /mnt/data/chachaxu/dataset/robodojo/robodojo_merged_stage1to4_20261106 # Final annotation text under review.
+annotation_pattern: "{episode_id}/final.json"
+keyframe_roots: # Stage4 outputs are split between two instance directories.
+  - /mnt/data/chachaxu/dataset/robodojo/subtask_original4_two_api_20261023/instance_1013
+  - /mnt/data/chachaxu/dataset/robodojo/subtask_original4_two_api_20261023/instance_1015
+keyframe_pattern: "{episode_id}/keyframes.json"
+sample_manifest_pattern: "{episode_id}/sample_manifest.json"
+frame_pattern: "{episode_id}/stage4_keyframes/frames/{frame_index:08d}.jpg"
+output_root: /mnt/data/chachaxu/dataset/robodojo/keyframe_grounded_audit_runs/pilot_v1 # Use a new directory for each prompt/input experiment.
+episode_ids: [] # Empty selects all standards; use a short list for the first pilot.
+episode_batchsize: 8 # Concurrent multimodal episode requests.
+input_workers: 32 # Concurrent read-only preflight.
+max_images_per_episode: 80 # Hard failure rather than silent frame truncation.
+max_image_bytes: 3000000 # Per-image source byte cap.
+max_text_chars: 600000 # Serialized payload cap before API calls.
+image_detail: high # OpenAI-compatible image detail hint.
+model:
+  credentials_file: ../../.credentials/xb4v.yaml
+  base_url: null
+  base_url_env: KEYFRAME_AUDIT_BASE_URL
+  api_key_env: KEYFRAME_AUDIT_API_KEY
+  name: null
+  model_env: KEYFRAME_AUDIT_MODEL
+  thinking: true
+  temperature: 0
+  max_tokens: 16384
+  stream: true
+  timeout_sec: 900
+  attempts: 3
+  retry_delay_sec: 5

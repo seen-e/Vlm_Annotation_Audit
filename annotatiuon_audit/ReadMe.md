@@ -3,6 +3,7 @@
 ```text
 annotatiuon_audit/
   episode_level_filter/  现有单 episode 审核，包含原模块全部文件和可视化工具
+  keyframe_grounded_filter/  最终标注 + Stage4关键帧图像的并列多模态审核
 ```
 
 ## Episode 级审核
@@ -24,6 +25,12 @@ python -m unittest annotatiuon_audit.episode_level_filter.test_pipeline -v
 `.credentials/xb4v.yaml`，配置相对路径已调整为 `../../.credentials/xb4v.yaml`。
 外部启动脚本若引用旧的 `annotatiuon_audit.run`，需改用上面的新入口。
 历史日志、冻结配置和恢复报告不改写，也不会因整理目录启动预测任务。
+
+## 关键帧多模态审核
+
+[详细使用说明](keyframe_grounded_filter/ReadMe.md)。该模块同时核对标注与画面的一致性
+以及实际结果是否满足审核标准，并明确区分“执行失败但标注正确”和“标注错误”。
+当前提示词尚待共同审核，默认只允许 dry-run，不会自动调用API。
 
 ## 前置文本分组
 
