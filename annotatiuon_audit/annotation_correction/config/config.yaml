@@ -1,0 +1,47 @@
+# All paths are on instance 1015. Original data is read-only.
+annotations_root: /mnt/data/chachaxu/dataset/robodojo/robodojo_merged_stage1to4_20261106
+audit_root: /mnt/data/chachaxu/dataset/robodojo/keyframe_grounded_audit_runs/robodojo3500_stage3_stage4_text_compare_20261117
+standards_path: /mnt/data/chachaxu/dataset/robodojo/robodojo_review_standard.json
+# metadata.json contains source_video and first_source_frame for shared MP4 files.
+video_metadata_root: /mnt/data/chachaxu/embedding_cluster/robodojo
+output_root: /mnt/data/chachaxu/dataset/robodojo/audit_correction_runs/integrated_20261123/correction
+episode_ids: [] # Explicit IDs override episode_ids_file; otherwise both empty selects audit_statuses.
+episode_ids_file: null # The workflow writes an explicit candidate list from the selected audit run.
+audit_statuses: [annotation_anomaly, task_not_met, uncertain]
+# All non-normal results must pass through review, regeneration and independent verification.
+required_reannotation_statuses: [annotation_anomaly, task_not_met, uncertain]
+# These categories always regenerate the whole episode, even if the diagnosed error is local.
+whole_episode_statuses: [task_not_met, uncertain]
+# Dataset collection premise; never overrides visible video evidence.
+dataset_expected_success: true
+episode_batchsize: 16 # Independent episodes; stages within one episode run sequentially.
+context_subtasks: 1 # Number of neighboring subtasks shown around a replacement interval.
+padding_sec: 2.0 # Additional visual context; never expands the writable interval.
+max_correction_retries: 2 # Two retries after the initial iteration: at most three correction + review iterations.
+post_correction_review:
+  interior_fps: 1 # Sample at 1 FPS first; uniformly cap excess samples, never pad short segments.
+  max_inner_frames: 4 # 0..4 interior frames per subtask, plus its first and last source frames.
+frames:
+  include_subtask_boundaries: true # Add each subtask's first/last source frame; sort and deduplicate.
+  max_frames: 1000 # Hard failure if exceeded; never silently lower sampling FPS.
+  jpeg_quality: 90
+  max_side: 960
+  keep_cache: true # Keep frames for reproducibility and offline viewer exports.
+stages:
+  # Whole-episode review uses sparse samples plus subtask boundary frames. Fractional FPS is supported.
+  adjudication: {fps: 1, thinking: true}
+  plan: {fps: 2, thinking: true}
+  refine: {fps: 2, thinking: true}
+  finalize: {fps: 2, thinking: true}
+  verification: {thinking: true} # Post-correction review uses bounded per-subtask sampling, not FPS.
+model:
+  credentials_file: /mnt/workspace/.credentials/planner_0z34.yaml
+  base_url_env: STAGE3_CORRECTION_BASE_URL # Optional environment override.
+  api_key_env: STAGE3_CORRECTION_API_KEY
+  model_env: STAGE3_CORRECTION_MODEL
+  temperature: 0
+  max_tokens: 16384
+  timeout_sec: 900
+  stream: true
+  attempts: 3 # Network, JSON and schema failures retry within the same stage.
+  retry_delay_sec: 5

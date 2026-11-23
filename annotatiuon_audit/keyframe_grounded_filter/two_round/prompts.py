@@ -1,4 +1,4 @@
-APPROVED = False
+APPROVED = True
 
 
 ROUND1_PROMPT = r'''
@@ -6,8 +6,8 @@ ROUND1_PROMPT = r'''
 
 【输入性质】
 1. review_standard是当前episode生效的审核要求；task只帮助理解语义，不能扩大标准。
-2. final_annotation和keyframe_annotation都是待审核文本，二者都可能出错，互相重复不能证明视觉事实。
-3. keyframe_annotation中的帧说明、成功结论和边界结论也是候选标注，不是独立证据。
+2. final_annotation只包含按执行顺序排列的精简subtasks。每段仅含subtask_index、segment_type、arm_1/arm_2的description与outcome、segment_summary；不包含sample边界、boundary_evidence或整份final.json的review、arm_registry、episode_success、terminal_summary。
+3. final_annotation和keyframe_annotation都是待审核文本，二者都可能出错，互相重复不能证明视觉事实。keyframe_annotation中的帧说明、成功结论和边界结论也不是独立证据。
 4. 先通读完整episode，再按final_annotation.subtasks的顺序逐段审核。不得跳过任何subtask。
 
 【文本优先的决策顺序】
@@ -76,7 +76,7 @@ ROUND2_PROMPT = r'''
 【输入】
 1. round1_text_review包含第一轮逐subtask文本审核及visual_requests。
 2. visual_frames只包含被请求subtask的候选证据帧。每个VISUAL_FRAME标签后紧跟对应图片，标签给出frame_ref、绝对frame_index、timestamp_sec、所属subtask和证据角色。
-3. final_annotation、keyframe_annotation及其中的帧说明仍是待审核文本，不是视觉事实。离散图片不等于完整视频。
+3. final_annotation只含subtasks；keyframe_annotation及其中的帧说明仍是待审核文本，不是视觉事实。离散图片不等于完整视频。
 
 【复核规则】
 1. 只回答visual_requests，不重新自由审核没有请求的段，也不推翻第一轮已经能够从文本确定的结论。

@@ -5,8 +5,11 @@
 
 ## 流程
 
-1. Round 1 只发送 `review_standard`、任务、最终 Stage3 文本和 Stage4 候选文本；
-   `images=[]`，payload 中也不含 `visual_frames`。
+1. Round 1 发送 `review_standard`、任务、最终 Stage3 的精简 `subtasks[]` 和 Stage4
+   候选文本。每个 Stage3 subtask 只保留原始编号、`segment_type`、两臂的
+   `description/outcome` 和 `segment_summary`；不发送 sample 边界及 final.json 顶层的
+   `review`、`arm_registry`、`episode_success`、`terminal_summary`。`images=[]`，payload
+   中也不含 `visual_frames`。
 2. 模型必须按输入顺序审核每个 subtask，并为每段引用至少一条可校验的原文。
 3. 明确文本矛盾直接输出 `annotation_anomaly`；文本自洽地记录真实失败时输出
    `task_not_met`。两者都不为确认既有文本结论而额外看图。

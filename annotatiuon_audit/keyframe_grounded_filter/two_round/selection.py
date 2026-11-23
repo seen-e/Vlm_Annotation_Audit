@@ -3,6 +3,23 @@ from __future__ import annotations
 import copy
 
 
+def _audit_subtask(item, fallback_index):
+    """Keep only the semantic fields needed by the text audit."""
+    return {
+        'subtask_index': copy.deepcopy(item.get('subtask_index', fallback_index)),
+        'segment_type': copy.deepcopy(item.get('segment_type')),
+        'arm_1': {
+            'description': copy.deepcopy((item.get('arm_1') or {}).get('description')),
+            'outcome': copy.deepcopy((item.get('arm_1') or {}).get('outcome')),
+        },
+        'arm_2': {
+            'description': copy.deepcopy((item.get('arm_2') or {}).get('description')),
+            'outcome': copy.deepcopy((item.get('arm_2') or {}).get('outcome')),
+        },
+        'segment_summary': copy.deepcopy(item.get('segment_summary')),
+    }
+
+
 def _references(frame, subtask_id=None, roles=None):
     values = frame.get('references') or []
     return [value for value in values
@@ -13,7 +30,13 @@ def _references(frame, subtask_id=None, roles=None):
 def text_job(job):
     """Build a provenance-preserving first-round job with no image content or frame metadata."""
     payload = {key: copy.deepcopy(job['payload'][key]) for key in
-               ('episode_id', 'review_standard', 'task', 'final_annotation', 'keyframe_annotation')}
+               ('episode_id', 'review_standard', 'task', 'keyframe_annotation')}
+    payload['final_annotation'] = {
+        'subtasks': [
+            _audit_subtask(item, index)
+            for index, item in enumerate(job['payload']['final_annotation']['subtasks'])
+        ]
+    }
     payload['audit_round'] = {'name': 'round1_text_review', 'image_count': 0,
                               'rule': 'Text first; request images only for unresolved core claims.'}
     return {**job, 'payload': payload, 'images': []}
@@ -46,7 +69,7 @@ def detail_job(job, text_review, maximum, neighbor_context=False):
     if len(ordered) > maximum:
         raise ValueError(f'Round2 selected {len(ordered)} images, cap={maximum}: {job["episode_id"]}')
     image_map = {image['frame_ref']: image for image in job['images']}
-    payload = copy.deepcopy(job['payload'])
+    payload = text_job(job)['payload']
     payload['visual_frames'] = ordered
     payload['round1_text_review'] = copy.deepcopy(text_review)
     payload['audit_round'] = {

@@ -64,6 +64,7 @@ python -m annotatiuon_audit.keyframe_grounded_filter.run
 
 ## 自适应二轮方案
 
-`two_round/` 提供文本优先的并列入口。第一轮不发送图像，并强制逐段检查最终文本与
-Stage4 候选文本；只有无法从文本裁决的具体核心声明才进入第二轮，第二轮仅发送目标
-subtask 的证据帧。详细配置、输出目录和命令见 `two_round/ReadMe.md`。
+`two_round/` 提供文本优先的并列入口。第一轮不发送图像，最终 Stage3 只输入
+`subtasks[]`，不输入 final.json 顶层的审核、机械臂注册、episode成功和终态字段；
+Stage4 候选文本仍保留。只有无法从文本裁决的具体核心声明才进入第二轮，第二轮仅发送
+目标 subtask 的证据帧。详细配置、输出目录和命令见 `two_round/ReadMe.md`。

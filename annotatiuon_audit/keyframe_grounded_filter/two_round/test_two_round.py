@@ -1,6 +1,6 @@
 import unittest
 
-from .run import merge_reviews
+from .run import merge_reviews, normalize_text_review
 from .schema import validate_text_review, validate_visual_review
 from .selection import detail_job, text_job
 
@@ -28,8 +28,16 @@ class TwoRoundTests(unittest.TestCase):
             'payload': {
                 'episode_id': 'ep_1', 'review_standard': '完成任务', 'task': 'task',
                 'final_annotation': {'subtasks': [
-                    {'subtask_index': 0, 'segment_summary': '移动红色物体'},
-                    {'subtask_index': 1, 'segment_summary': '放置红色物体'},
+                    {'subtask_index': 0, 'start_sample_index': 0,
+                     'end_sample_index_exclusive': 2, 'segment_type': 'operation',
+                     'arm_1': {'description': '移动红色物体', 'outcome': '进行中'},
+                     'arm_2': {'description': '未参与', 'outcome': '未参与'},
+                     'segment_summary': '移动红色物体', 'boundary_evidence': 'sample 2'},
+                    {'start_sample_index': 2, 'end_sample_index_exclusive': 5,
+                     'segment_type': 'operation',
+                     'arm_1': {'description': '放置红色物体', 'outcome': '完成'},
+                     'arm_2': {'description': '未参与', 'outcome': '未参与'},
+                     'segment_summary': '放置红色物体', 'uncertainty': None},
                 ]},
                 'keyframe_annotation': {'subtasks': [
                     {'annotation': {'completion_criterion': '移动红色物体'}},
@@ -72,7 +80,27 @@ class TwoRoundTests(unittest.TestCase):
         selected = text_job(self.job)
         self.assertEqual(selected['images'], [])
         self.assertNotIn('visual_frames', selected['payload'])
+        self.assertEqual(set(selected['payload']['final_annotation']), {'subtasks'})
+        self.assertIn('keyframe_annotation', selected['payload'])
+        subtasks = selected['payload']['final_annotation']['subtasks']
+        self.assertEqual(subtasks[0], {
+            'subtask_index': 0, 'segment_type': 'operation',
+            'arm_1': {'description': '移动红色物体', 'outcome': '进行中'},
+            'arm_2': {'description': '未参与', 'outcome': '未参与'},
+            'segment_summary': '移动红色物体',
+        })
+        self.assertEqual(subtasks[1]['subtask_index'], 1)
+        self.assertNotIn('start_sample_index', subtasks[0])
+        self.assertNotIn('end_sample_index_exclusive', subtasks[0])
+        self.assertNotIn('boundary_evidence', subtasks[0])
+        self.assertNotIn('uncertainty', subtasks[1])
         self.assertEqual(selected['payload']['audit_round']['image_count'], 0)
+
+    def test_text_status_aliases_are_normalized(self):
+        result = {'annotation_text_status': 'normal', 'criterion_text_status': 'consistent'}
+        self.assertEqual(normalize_text_review(result), {
+            'annotation_text_status': 'consistent', 'criterion_text_status': 'met'
+        })
 
     def test_text_schema_requires_every_subtask(self):
         payload = text_job(self.job)['payload']

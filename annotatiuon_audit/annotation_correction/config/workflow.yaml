@@ -1,0 +1,9 @@
+# The current production audit contract; other audit modes remain standalone.
+audit_backend: text_first_two_round
+# Paths are relative to this file, or may be absolute.
+# Before a new run, update the audit config to matching Stage3 + Stage4 inputs
+# and a fresh output directory. Old audits must not be used on corrected text.
+audit_config: ../../keyframe_grounded_filter/two_round/config_robodojo3500_20261117.yaml
+correction_config: config.yaml
+# Handoff manifests and workflow status only; not the correction results directory.
+output_root: /mnt/data/chachaxu/dataset/robodojo/audit_correction_runs/integrated_20261123/workflow

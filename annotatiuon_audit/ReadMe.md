@@ -4,6 +4,18 @@
 annotatiuon_audit/
   episode_level_filter/  现有单 episode 审核，包含原模块全部文件和可视化工具
   keyframe_grounded_filter/  最终标注 + Stage4关键帧图像的并列多模态审核
+  annotation_correction/    Stage3矫正、矫正后复核及两轮审核到矫正的统一调度
+```
+
+## 审核与矫正一体化
+
+[矫正模块及统一入口说明](annotation_correction/ReadMe.md)。原审核入口不变，统一入口可选择
+只审核、对已有审核结果矫正、审核后自动矫正。当前对接文本优先两轮审核，按其明确清单选择
+非正常episode，并校验旧审核与当前标注一致。正常数据跳过；不自动覆盖源文件、不启动Stage4。
+
+```bash
+python -m annotatiuon_audit.annotation_correction.workflow --mode correction --dry-run
+python -m annotatiuon_audit.annotation_correction.workflow --mode all
 ```
 
 ## Episode 级审核

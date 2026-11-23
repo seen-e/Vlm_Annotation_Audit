@@ -16,6 +16,17 @@ from .schema import validate_text_review, validate_visual_review
 from .selection import detail_job, text_job
 
 
+def normalize_text_review(result):
+    """Normalize common model aliases without changing the audit decision."""
+    if not isinstance(result, dict):
+        return result
+    if result.get('annotation_text_status') == 'normal':
+        result['annotation_text_status'] = 'consistent'
+    if result.get('criterion_text_status') in ('normal', 'consistent'):
+        result['criterion_text_status'] = 'met'
+    return result
+
+
 def load_two_round_config(path):
     cfg = load_config(path)
     if not isinstance(cfg.get('round1'), dict) or cfg['round1'].get('text_only') is not True:
@@ -78,6 +89,8 @@ def request_one(folder, job, prompt, cfg, auth, validator, transport=complete):
             if finish != 'stop':
                 raise ValueError('Incomplete response: ' + str(finish))
             result = json.loads(raw)
+            if validator is validate_text_review:
+                result = normalize_text_review(result)
             validator(result, job['payload'])
             save_json(output_path, result)
             return result, False
